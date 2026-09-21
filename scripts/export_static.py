@@ -11,7 +11,7 @@ from engine.scenarios import generate_scenario
 from engine.state import EngineState
 from engine.simulator import Simulator
 
-OUT=Path('web/public/demo'); STRATS=['greedy_insertion','insertion_2opt_star','tabu_search']; METRICS=['total_distance','mean_response_time_ms','route_disruption','compute_time_s','evaluations','customers_served','customers_unserved','pending_pool_size','feasibility_violations']
+OUT=Path('web/public/demo'); STRATS=['greedy_insertion','insertion_2opt_star','tabu_search']; METRICS=['total_distance','mean_response_time_ms','route_disruption','compute_time_s','evaluations','customers_served','customers_unserved','pending_pool_size','feasibility_violations','accepted_moves','improving_moves_found','tabu_evaluations']
 def summary(xs):
     a=np.array(xs,dtype=float); n=len(a); sd=float(a.std(ddof=1)) if n>1 else 0.; se=sd/(n**.5) if n else 0.
     return {'mean':float(a.mean()) if n else 0.,'sd':sd,'se':se,'ci95':[float(a.mean()-1.96*se) if n else 0.,float(a.mean()+1.96*se) if n else 0.],'n':n}
@@ -34,8 +34,8 @@ def main():
         fstat,fp=friedmanchisquare(*distances)
         comparisons=[]
         for i,j in ((0,1),(0,2),(1,2)):
-            diff=np.array(distances[i])-np.array(distances[j]); stat,p=wilcoxon(diff,zero_method='pratt') if np.any(diff) else (0.,1.)
-            comparisons.append({'comparison':f'{STRATS[i]}-{STRATS[j]}','mean_difference':float(diff.mean()),'bootstrap_ci95':boot(diff),'effect_size':float(diff.mean()/diff.std(ddof=1)) if len(diff)>1 and diff.std(ddof=1)>0 else 0.,'wilcoxon_statistic':float(stat),'wilcoxon_p':float(p)})
+            diff=np.array(distances[i])-np.array(distances[j]); all_zero=not np.any(diff); stat,p=wilcoxon(diff,zero_method='pratt') if not all_zero else (0.,1.)
+            comparisons.append({'comparison':f'{STRATS[i]}-{STRATS[j]}','mean_difference':float(diff.mean()),'bootstrap_ci95':boot(diff),'effect_size':float(diff.mean()/diff.std(ddof=1)) if len(diff)>1 and diff.std(ddof=1)>0 else 0.,'wilcoxon_statistic':float(stat),'wilcoxon_p':float(p),'note':'no difference: all paired differences are 0' if all_zero else None})
         ordered=sorted(comparisons,key=lambda x:x['wilcoxon_p']); m=len(ordered)
         for rank,item in enumerate(ordered): item['holm_p']=min(1.,item['wilcoxon_p']*(m-rank)); item['holm_reject']=item['holm_p']<.05
         paired.append({'customers':customers,'dynamism':dyn,'n':len(triples),'friedman':{'statistic':float(fstat),'p_value':float(fp)},'comparisons':comparisons})

@@ -48,3 +48,7 @@ def test_same_seed_and_config_same_result():
     for _ in range(2):
         state=EngineState(generate_scenario(config,9)); outcomes.append((Simulator(state,GreedyInsertion()).run().vehicles,))
     assert outcomes[0] == outcomes[1]
+
+def test_wilcoxon_all_zero_difference_is_reported():
+    from engine.stats import wilcoxon_pairwise
+    assert wilcoxon_pairwise([[1.,1.],[1.,1.]])[0][5] == "no difference: all paired differences are 0"

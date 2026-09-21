@@ -28,4 +28,7 @@ def run(name, design):
     for strategy in STRATEGIES:
       print(f"{name} {strategy}: mean total_distance={sum(values[strategy]['total_distance'])/len(values[strategy]['total_distance']):.6f}, mean evaluations={sum(values[strategy]['evaluations'])/len(values[strategy]['evaluations']):.6f}, mean compute_time_s={sum(values[strategy]['compute_time_s'])/len(values[strategy]['compute_time_s']):.6f}")
 if __name__=='__main__':
-    run('final',DESIGN); run('tuning',TUNING)
+    import sys
+    selected=sys.argv[1:]
+    if not selected or 'final' in selected: run('final',DESIGN)
+    if not selected or 'tuning' in selected: run('tuning',TUNING)

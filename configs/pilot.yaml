@@ -21,8 +21,10 @@ strategies:
 budgets:
   evaluation_limit:
     greedy: 1000
-    two_opt_star: 5000
-    tabu: 10000
+    two_opt_star: 500
+    tabu: 500
+
+budget_definition: "B and C each inspect at most 500 repair candidates per replanning event; A has no repair phase."
 
 tabu:
   tenure: 10

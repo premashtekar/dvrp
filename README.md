@@ -8,11 +8,11 @@ A reproducible Dynamic Vehicle Routing Problem (DVRP) comparison engine with a F
 
 ## Configuration and executed batches
 
-The final and tuning batches each used customers `[50]`, dynamism `[0.1, 0.2, 0.4, 0.6, 0.8]`, strategies A/B/C, one worker, and five seeds. Final uses seeds `1–5`; tuning uses `101–105` and is excluded from reported results. The original 300-run design was cut to five seeds and 50 customers after the preflight projection exceeded eight minutes. Tabu has a per-run, 500-candidate re-optimization budget; feasible greedy insertion remains mandatory and its evaluations are included in the reported total.
+The final and tuning batches each used customers `[50]`, dynamism `[0.1, 0.2, 0.4, 0.6, 0.8]`, strategies A/B/C, one worker, and five seeds. Final uses seeds `1–5`; tuning uses `101–105` and is excluded from reported results. Customers `[100]` and additional seeds were cut because the full 300-run design projected beyond eight minutes. B and C each have the same 500-candidate repair budget per replanning event; A has no repair phase. Feasible greedy insertion remains mandatory and its evaluations are included in the reported total.
 
 ## Findings and research questions
 
-H1: final mean distance was 1198.268 for A, 1009.931 for B, and 1198.268 for C, with all strategies serving 50 customers per run. H2: B’s lower final mean distance coincided with 12797.640 mean evaluations versus 667.240 for A. H3: C matched A’s final distance after the service-count correction, while its mean total evaluations were 1167.240. H4: tuning data is reserved for the optional selector and is not used in these reported values.
+H1: final mean distance was 1198.268 for A, 1024.118 for B, and 1024.537 for C, with all strategies serving 50 customers per run. H2: B’s lower final mean distance coincided with 11084.080 mean evaluations versus 667.240 for A. H3: C’s final mean distance was 1024.537 with 14976.680 mean total evaluations, including its event-level repair candidates. H4: tuning data is reserved for a selector and is not used in these reported values.
 
 ## Limitations
 

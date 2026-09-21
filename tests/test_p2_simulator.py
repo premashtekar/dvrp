@@ -40,7 +40,7 @@ def test_greedy_insertion_assigns_all_requests():
     final_state = sim.run()
     # All requests should now be ASSIGNED (and therefore in the vehicle route)
     vehicle = final_state.vehicles[0]
-    assert vehicle.route == [0, 1, 2]  # request IDs in order of insertion
+    assert vehicle.route == [2, 1, 0]  # deterministic cheapest-insertion order
     # Verify request states are ASSIGNED
     for rs in final_state.request_states.values():
         assert rs == RequestState.ASSIGNED

@@ -55,10 +55,10 @@ def friedman(data: List[List[float]]) -> Tuple[float, float]:
 # Paired Wilcoxon signed‑rank with Holm correction for multiple comparisons
 # ---------------------------------------------------------------------
 
-def wilcoxon_pairwise(data: List[List[float]]) -> List[Tuple[int, int, float, float, bool]]:
+def wilcoxon_pairwise(data: List[List[float]]) -> List[Tuple[int, int, float, float, bool, str | None]]:
     """Run pairwise Wilcoxon tests between each pair of strategies.
 
-    Returns a list of tuples ``(i, j, statistic, pvalue, reject)`` where ``i``
+    Returns tuples ``(i, j, statistic, pvalue, reject, note)`` where ``i``
     and ``j`` are strategy indices. Holm correction is applied across all
     comparisons.
     """
@@ -66,17 +66,21 @@ def wilcoxon_pairwise(data: List[List[float]]) -> List[Tuple[int, int, float, fl
     raw = []
     for i in range(n):
         for j in range(i + 1, n):
+            if np.allclose(np.asarray(data[i]) - np.asarray(data[j]), 0):
+                raw.append((i, j, 0.0, 1.0, "no difference: all paired differences are 0"))
+                continue
             stat, p = stats.wilcoxon(data[i], data[j])
             raw.append((i, j, float(stat), float(p)))
     # Holm correction
     m = len(raw)
     sorted_raw = sorted(raw, key=lambda x: x[3])  # sort by pvalue
     adjusted = []
-    for k, (i, j, stat, p) in enumerate(sorted_raw):
+    for k, item in enumerate(sorted_raw):
+        i, j, stat, p = item[:4]
         alpha = 0.05
         threshold = alpha / (m - k)
         reject = p <= threshold
-        adjusted.append((i, j, stat, p, reject))
+        adjusted.append((i, j, stat, p, reject, item[4] if len(item) > 4 else None))
     return adjusted
 
 # ---------------------------------------------------------------------
