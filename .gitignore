@@ -3,6 +3,8 @@
 node_modules/
 .venv/
 data/*.db
+data/*.log
+data/*.err
 dist/
 data/traces/
 data/experiments/
