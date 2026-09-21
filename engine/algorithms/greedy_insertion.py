@@ -1,53 +1,25 @@
 from __future__ import annotations
-
 from typing import Tuple
-
 from ..state import EngineState, RequestState
 from ..models import Request
-from ..distance import euclidean, build_matrix
+from ..distance import build_matrix
 from .base import Strategy
 
 class GreedyInsertion(Strategy):
-    def __init__(self):
-        self._dist_matrix = None
-
-    def _ensure_matrix(self, state: EngineState) -> None:
-        if self._dist_matrix is None:
-            points = [(0.0, 0.0)] + state.scenario.customer_locations
-            self._dist_matrix = build_matrix(points)
-
-    def _cost_delta(self, veh_route: list[int], insert_pos: int, req: Request) -> float:
-        prev_id = 0 if insert_pos == 0 else veh_route[insert_pos - 1] + 1
-        next_id = 0 if insert_pos == len(veh_route) else veh_route[insert_pos] + 1
-        req_id = req.request_id + 1
-        return self._dist_matrix[prev_id][req_id] + self._dist_matrix[req_id][next_id] - self._dist_matrix[prev_id][next_id]
-
+    """Deterministic cheapest feasible insertion; every position costs one evaluation."""
+    def __init__(self): self.evaluations = self.iterations = self.accepted_moves = self.rejected_moves = 0; self.evaluation_budget = None
     def update(self, state: EngineState, request: Request) -> Tuple[int, EngineState]:
-        self._ensure_matrix(state)
-        best_vehicle = None
-        best_pos = None
-        best_delta = float('inf')
-        evals = 0
-
-        for vehicle in state.vehicles.values():
-            # Check capacity
-            current_load = sum(state.requests[rid].demand for rid in vehicle.route)
-            if current_load + request.demand > vehicle.capacity:
-                continue
-
-            for pos in range(len(vehicle.route) + 1):
-                evals += 1
-                delta = self._cost_delta(vehicle.route, pos, request)
-                if delta < best_delta:
-                    best_delta = delta
-                    best_vehicle = vehicle.vehicle_id
-                    best_pos = pos
-
-        if best_vehicle is None:
-            # Fallback if no feasible (violating capacity)
-            best_vehicle = list(state.vehicles.values())[0].vehicle_id
-            best_pos = len(state.vehicles[best_vehicle].route)
-            
-        state.vehicles[best_vehicle].route.insert(best_pos, request.request_id)
-        state.request_states[request.request_id] = RequestState.SERVED
-        return evals, state
+        matrix = build_matrix([(0.0, 0.0)] + state.scenario.customer_locations); best = None; count = 0
+        for vid in sorted(state.vehicles):
+            route = state.vehicles[vid].route
+            if sum(state.requests[x].demand for x in route) + request.demand > state.vehicles[vid].capacity: continue
+            for pos in range(len(route) + 1):
+                if self.evaluation_budget is not None and self.evaluations + count >= self.evaluation_budget: break
+                count += 1; left, right = (0 if pos == 0 else route[pos-1]+1), (0 if pos == len(route) else route[pos]+1)
+                candidate = (matrix[left][request.request_id+1] + matrix[request.request_id+1][right] - matrix[left][right], vid, pos)
+                if best is None or candidate < best: best = candidate
+            if self.evaluation_budget is not None and self.evaluations + count >= self.evaluation_budget: break
+        self.evaluations += count; self.iterations += 1
+        if best is None: self.rejected_moves += 1; return count, state
+        _, vid, pos = best; state.vehicles[vid].route.insert(pos, request.request_id); state.request_states[request.request_id] = RequestState.ASSIGNED; self.accepted_moves += 1
+        return count, state

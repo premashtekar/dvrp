@@ -1,132 +1,45 @@
+"""Reproducible experiment execution and SQLite persistence."""
 from __future__ import annotations
-
-import hashlib
-import json
-import os
-import time
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
-from typing import List, Dict, Any
-
-import sqlite3
-
-from .scenarios import generate_scenario, Scenario
+import copy, hashlib, json, os, sqlite3, time
+from datetime import datetime, timezone
+from .scenarios import generate_scenario
 from .state import EngineState, RequestState
-from .algorithms.greedy_insertion import GreedyInsertion
-from .algorithms.tabu_search import TabuSearch
 from .simulator import Simulator
-from .algorithms.two_opt_star import apply_two_opt_star
-from .algorithms.greedy_then_two_opt_star import GreedyThenTwoOptStar
 from .distance import build_matrix
+from .algorithms.greedy_insertion import GreedyInsertion
+from .algorithms.greedy_then_two_opt_star import GreedyThenTwoOptStar
+from .algorithms.tabu_search import TabuSearch
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "dvrp.db")
-
-def get_conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+DB_PATH=os.path.join(os.path.dirname(__file__), '..', 'data', 'dvrp.db')
+def get_conn():
+    os.makedirs(os.path.dirname(DB_PATH),exist_ok=True); conn=sqlite3.connect(DB_PATH); conn.row_factory=sqlite3.Row
+    conn.execute('CREATE TABLE IF NOT EXISTS experiment_runs (id TEXT PRIMARY KEY, experiment_id TEXT, run_id TEXT, strategy TEXT, params_json TEXT, metrics_json TEXT, created_at TEXT)')
     return conn
-
+def strategy_factory(name, budget=None):
+    budget=budget or {}
+    if name=='greedy_insertion': return GreedyInsertion()
+    if name=='insertion_2opt_star': return GreedyThenTwoOptStar()
+    if name=='tabu_search': return TabuSearch(tenure=budget.get('tenure',7), evaluation_budget=budget.get('max_evaluations',500))
+    raise ValueError(f'Unknown strategy: {name}')
 class ExperimentRunner:
-    def __init__(self, experiment_id: str, runs: List[Dict[str, Any]], workers: int = 1):
-        self.experiment_id = experiment_id
-        self.runs = runs
-        self.workers = max(1, workers)
-        self.base_trace_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "traces"))
-        os.makedirs(self.base_trace_dir, exist_ok=True)
-
-    def _compute_total_distance(self, state: EngineState) -> float:
-        points = [(0.0, 0.0)] + state.scenario.customer_locations
-        dist = build_matrix(points)
-        cost = 0.0
-        for veh in state.vehicles.values():
-            if not veh.route: continue
-            cost += dist[0][veh.route[0] + 1]
-            for a, b in zip(veh.route, veh.route[1:]):
-                cost += dist[a + 1][b + 1]
-            cost += dist[veh.route[-1] + 1][0]
-        return cost
-
-    def _count_violations(self, state: EngineState) -> int:
-        violations = 0
-        for veh in state.vehicles.values():
-            load = sum(state.requests[r].demand for r in veh.route)
-            if load > veh.capacity: violations += 1
-        return violations
-
-    def _run_single(self, run_cfg: Dict[str, Any]) -> None:
-        scenario_obj = generate_scenario({"scenario": run_cfg["scenario"]}, run_cfg["seed"])
-        scenario_id = hashlib.sha256(json.dumps(run_cfg["scenario"], sort_keys=True).encode()).hexdigest()[:16]
-        created = datetime.utcnow().isoformat()
-        
+    def __init__(self, experiment_id, runs, workers=1): self.experiment_id,self.runs,self.workers=experiment_id,runs,workers
+    def _distance(self,state):
+        m=build_matrix([(0.,0.)]+state.scenario.customer_locations); total=0.
+        for vehicle in state.vehicles.values():
+            nodes=[0]+[r+1 for r in vehicle.route]+[0]; total += sum(m[a][b] for a,b in zip(nodes,nodes[1:]))
+        return total
+    def _run_single(self,cfg):
+        scenario=copy.deepcopy(cfg.get('scenario_obj') or generate_scenario({'scenario':cfg['scenario']},cfg['seed']))
+        state=EngineState(scenario); strategy=strategy_factory(cfg['strategy'],cfg.get('budget')); sim=Simulator(state,strategy)
+        start=time.perf_counter(); final=sim.run(); compute=time.perf_counter()-start
+        metrics={'total_distance':self._distance(final),'mean_response_time_ms':sum(sim.response_times)/len(sim.response_times) if sim.response_times else 0.0,'max_response_time_ms':max(sim.response_times,default=0.0),'route_disruption':sim.route_disruption,'evaluations':sim.total_evaluations,'iterations':strategy.iterations,'accepted_moves':strategy.accepted_moves,'rejected_moves':strategy.rejected_moves,'feasibility_violations':sum(sum(final.requests[r].demand for r in v.route)>v.capacity for v in final.vehicles.values()),'customers_served':sum(s==RequestState.ASSIGNED for s in final.request_states.values()),'customers_unserved':sum(s!=RequestState.ASSIGNED for s in final.request_states.values()),'phase_timings_ms':sim.phase_timings_ms,'compute_time_s':compute,'total_time_s':compute}
+        scenario_key=hashlib.sha256(json.dumps(cfg['scenario'],sort_keys=True).encode()).hexdigest()[:16]; run_id=hashlib.sha256((self.experiment_id+cfg['strategy']+str(cfg['seed'])+str(time.time_ns())).encode()).hexdigest()[:16]
+        created=datetime.now(timezone.utc).isoformat()
         with get_conn() as conn:
-            cur = conn.cursor()
-            cur.execute(
-                "INSERT OR REPLACE INTO scenarios (id, created_at, seed, params_json, scenario_json) VALUES (?,?,?,?,?)",
-                (scenario_id, created, run_cfg["seed"], json.dumps(run_cfg["scenario"]), json.dumps(scenario_obj.__dict__))
-            )
-            conn.commit()
-
-        state = EngineState(scenario_obj)
-        strat_name = run_cfg["strategy"]
-        if strat_name == "greedy_insertion":
-            strat = GreedyInsertion()
-        elif strat_name == "insertion_2opt_star":
-            strat = GreedyThenTwoOptStar()
-        elif strat_name == "tabu_search":
-            strat = TabuSearch(evaluation_budget=run_cfg.get("budget", {}).get("max_evaluations", 200))
-        else:
-            raise ValueError(f"Unsupported strategy {strat_name}")
-
-        sim = Simulator(state, strat)
-        start = time.perf_counter()
-        sim.run()
-
-        evals = sim.total_evaluations
-        route_disruption = 0
-        iterations = 1
-        
-        if strat_name == "insertion_2opt_star":
-            e, delta = apply_two_opt_star(state)
-            evals += e
-            route_disruption = e  # mock or real disruption
-
-        total_time_s = time.perf_counter() - start
-        
-        served = sum(1 for rs in state.request_states.values() if rs == RequestState.SERVED)
-        unserved = sum(1 for rs in state.request_states.values() if rs != RequestState.SERVED)
-        mean_rt = sum(sim.response_times)/len(sim.response_times) if sim.response_times else 0
-        max_rt = max(sim.response_times) if sim.response_times else 0
-
-        metrics = {
-            "total_time_s": total_time_s,
-            "total_distance": self._compute_total_distance(state),
-            "mean_response_time_ms": mean_rt,
-            "max_response_time_ms": max_rt,
-            "route_disruption": route_disruption,
-            "evaluations": evals,
-            "iterations": iterations,
-            "feasibility_violations": self._count_violations(state),
-            "customers_served": served,
-            "customers_unserved": unserved,
-        }
-
-        trace_path = os.path.abspath(os.path.join(self.base_trace_dir, f"{scenario_id}.jsonl"))
-        sim.dump_trace(trace_path)
-
-        run_id = hashlib.sha256((scenario_id + strat_name + str(time.time())).encode()).hexdigest()[:16]
-        with get_conn() as conn:
-            cur = conn.cursor()
-            cur.execute(
-                "INSERT INTO runs (id, scenario_id, strategy, budget_json, params_json, code_version, workers, status, metrics_json, trace_path, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                (run_id, scenario_id, strat_name, json.dumps(run_cfg.get("budget", {})), json.dumps({}), "0.1.0", 1, "finished", json.dumps(metrics), trace_path, created)
-            )
-            cur.execute(
-                "INSERT INTO experiment_runs (id, experiment_id, run_id, strategy, params_json, metrics_json, created_at) VALUES (?,?,?,?,?,?,?)",
-                (hashlib.sha256((run_id + self.experiment_id).encode()).hexdigest()[:16], self.experiment_id, run_id, strat_name, json.dumps(run_cfg), json.dumps(metrics), created)
-            )
-            conn.commit()
-
-    def run(self) -> None:
-        with ThreadPoolExecutor(max_workers=self.workers) as executor:
-            for cfg in self.runs:
-                executor.submit(self._run_single, cfg)
+            conn.execute('INSERT INTO experiment_runs VALUES (?,?,?,?,?,?,?)',(run_id,self.experiment_id,run_id,cfg['strategy'],json.dumps({k:v for k,v in cfg.items() if k!='scenario_obj'}),json.dumps(metrics),created)); conn.commit()
+        return metrics
+    def run(self):
+        for index,cfg in enumerate(self.runs,1):
+            metrics=self._run_single(cfg)
+            if index%25==0: print(f'progress {index}/{len(self.runs)}')
+        return len(self.runs)
