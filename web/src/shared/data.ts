@@ -1,0 +1,3 @@
+export type Metric={mean:number;sd:number;se:number;ci95:number[];n:number}; export type Aggregate={customers:number;dynamism:number;strategy:string;metrics:Record<string,Metric>}; export type ResultsData={aggregated:Aggregate[];paired_comparisons:any[];demo_scenarios:any[];note:string};
+export const labels:Record<string,string>={greedy_insertion:'A · Greedy insertion',insertion_2opt_star:'B · Insertion + 2-opt*',tabu_search:'C · Tabu search',adaptive_selector:'D · Adaptive selector'}; export const colors:Record<string,string>={greedy_insertion:'#B4FF39',insertion_2opt_star:'#39FF88',tabu_search:'#F2FFE9',adaptive_selector:'#73F7E5'};
+export async function load():Promise<ResultsData>{return (await fetch('/demo/results.json')).json()}

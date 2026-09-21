@@ -11,7 +11,7 @@ from engine.scenarios import generate_scenario
 from engine.state import EngineState
 from engine.simulator import Simulator
 
-OUT=Path('web/public/demo'); STRATS=['greedy_insertion','insertion_2opt_star','tabu_search']; METRICS=['total_distance','mean_response_time_ms','route_disruption','compute_time_s','evaluations']
+OUT=Path('web/public/demo'); STRATS=['greedy_insertion','insertion_2opt_star','tabu_search']; METRICS=['total_distance','mean_response_time_ms','route_disruption','compute_time_s','evaluations','customers_served','customers_unserved','pending_pool_size','feasibility_violations']
 def summary(xs):
     a=np.array(xs,dtype=float); n=len(a); sd=float(a.std(ddof=1)) if n>1 else 0.; se=sd/(n**.5) if n else 0.
     return {'mean':float(a.mean()) if n else 0.,'sd':sd,'se':se,'ci95':[float(a.mean()-1.96*se) if n else 0.,float(a.mean()+1.96*se) if n else 0.],'n':n}
