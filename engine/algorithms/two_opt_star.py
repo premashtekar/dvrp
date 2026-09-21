@@ -5,7 +5,10 @@ from ..state import EngineState
 from ..distance import build_matrix
 
 def _cost(state: EngineState, route: list[int]) -> float:
-    matrix = build_matrix([(0.0, 0.0)] + state.scenario.customer_locations)
+    matrix = getattr(state, "_distance_matrix", None)
+    if matrix is None:
+        matrix = build_matrix([(0.0, 0.0)] + state.scenario.customer_locations)
+        state._distance_matrix = matrix
     nodes = [0] + [rid + 1 for rid in route] + [0]
     return sum(matrix[a][b] for a, b in zip(nodes, nodes[1:]))
 

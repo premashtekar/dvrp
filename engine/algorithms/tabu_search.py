@@ -8,7 +8,10 @@ class TabuSearch(GreedyInsertion):
     def __init__(self, tenure: int = 7, evaluation_budget: int = 500):
         super().__init__(); self.tenure = tenure; self.evaluation_budget = evaluation_budget; self.tabu = deque(maxlen=tenure)
     def _cost(self, state, route):
-        matrix = build_matrix([(0., 0.)] + state.scenario.customer_locations); nodes = [0] + [r+1 for r in route] + [0]
+        matrix = getattr(state, "_distance_matrix", None)
+        if matrix is None:
+            matrix = build_matrix([(0., 0.)] + state.scenario.customer_locations); state._distance_matrix = matrix
+        nodes = [0] + [r+1 for r in route] + [0]
         return sum(matrix[a][b] for a, b in zip(nodes, nodes[1:]))
     def update(self, state, request):
         before = self.evaluations; _, state = super().update(state, request)
