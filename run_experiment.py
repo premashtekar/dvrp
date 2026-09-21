@@ -17,13 +17,13 @@ from engine.experiment_runner import ExperimentRunner
 import sqlite3
 
 # Configuration parameters
-customers_list = [50, 100]
+customers_list = [50]  # Reduced for quick pilot
 vehicles = 5
 capacity = 100  # arbitrary, must be enough
 dynamism_list = [0.1, 0.4, 0.8]
 map_size = 100.0
 horizon = 1000.0
-seeds = list(range(5))  # 0-4
+seeds = [1, 2, 3]  # pilot_v2 seeds
 strategies = ["greedy_insertion", "insertion_2opt_star", "tabu_search"]
 
 # Build run specifications

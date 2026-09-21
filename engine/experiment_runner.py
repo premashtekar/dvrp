@@ -27,6 +27,7 @@ from .algorithms.greedy_insertion import GreedyInsertion
 from .algorithms.tabu_search import TabuSearch
 from .simulator import Simulator
 from .algorithms.two_opt_star import apply_two_opt_star
+from .algorithms.greedy_then_two_opt_star import GreedyThenTwoOptStar
 
 # Helper to get DB connection (same as in api/routers.py)
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "dvrp.db")
@@ -84,7 +85,7 @@ class ExperimentRunner:
         if strat_name == "greedy_insertion":
             strat = GreedyInsertion()
         elif strat_name == "insertion_2opt_star":
-            strat = GreedyInsertion()
+            strat = GreedyThenTwoOptStar()
         elif strat_name == "tabu_search":
             strat = TabuSearch()
         else:

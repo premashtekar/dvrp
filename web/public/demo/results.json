@@ -1,0 +1,293 @@
+{
+  "generated_at": "2026-09-21T01:50:03.343370Z",
+  "seed_count": 3,
+  "config": {
+    "customers": [
+      50
+    ],
+    "vehicles": 5,
+    "dynamism": [
+      0.1,
+      0.4,
+      0.8
+    ],
+    "strategies": [
+      "greedy_insertion",
+      "insertion_2opt_star",
+      "tabu_search"
+    ],
+    "seeds": [
+      1,
+      2,
+      3
+    ]
+  },
+  "per_run": [
+    {
+      "run_id": "ff2ae525ba8a4a2e",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.001259199998457916,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "59703fcde7702e95",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0011301999911665916,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "c22c72468ad4e500",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.3373779999965336,
+        "evaluations": 54,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "341841e0b03d6902",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.0012117999867768958,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "6440c8766a3c9afb",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0012461000005714595,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "3addddbab59e6d12",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.3309565000090515,
+        "evaluations": 52,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "611e83c23433fccf",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.0025741999997990206,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "e140d347a1b26de6",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0013949999993201345,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "34a9a255abf2da0f",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.33040029999392573,
+        "evaluations": 51,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "9f9dda5b27d6a82d",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.001396600011503324,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "31f66ef66ea47206",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0014752999995835125,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "6b438aaff1308ced",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.3336135999998078,
+        "evaluations": 51,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "150566d1212f81a4",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.0013326999905984849,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "c41d68d17f9e8bb0",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0017121999990195036,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "0a8cada7c8cedb14",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.3364635000034468,
+        "evaluations": 52,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "536217a9f5a7e5bb",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.0017351999995298684,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "d7c8df72eb2e4f50",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.001181999992695637,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "46f53cf780bb5ac0",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.3343509000114864,
+        "evaluations": 55,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "61c050cd66207ec3",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.001080499991076067,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "03a2b6bc950a5229",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0015493999962927774,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "d37ee91cf2bd624b",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.3295298000011826,
+        "evaluations": 54,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "62de3a879c1888f0",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.001353900006506592,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "544a900455739466",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0011121999996248633,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "1665e381e0436115",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.32051119999960065,
+        "evaluations": 57,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "6548cc2203677193",
+      "strategy": "greedy_insertion",
+      "metrics": {
+        "total_time_s": 0.0012351000041235238,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "700d7bb4eafa67fc",
+      "strategy": "insertion_2opt_star",
+      "metrics": {
+        "total_time_s": 0.0012664999958360568,
+        "evaluations": 0,
+        "delta_distance": 0.0
+      }
+    },
+    {
+      "run_id": "0e29952438543fb2",
+      "strategy": "tabu_search",
+      "metrics": {
+        "total_time_s": 0.36616599999251775,
+        "evaluations": 54,
+        "delta_distance": 0.0
+      }
+    }
+  ],
+  "aggregated": [
+    {
+      "strategy": "greedy_insertion",
+      "mean_time_s": 0.0014643555542635214,
+      "mean_evaluations": 0.0,
+      "mean_delta_distance": 0.0
+    },
+    {
+      "strategy": "insertion_2opt_star",
+      "mean_time_s": 0.0013409888860122818,
+      "mean_evaluations": 0.0,
+      "mean_delta_distance": 0.0
+    },
+    {
+      "strategy": "tabu_search",
+      "mean_time_s": 0.3354855333341725,
+      "mean_evaluations": 53.333333333333336,
+      "mean_delta_distance": 0.0
+    }
+  ],
+  "paired_stats": {
+    "error": "No module named 'engine'"
+  }
+}

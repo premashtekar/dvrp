@@ -1,0 +1,8 @@
+__pycache__/
+node_modules/
+dist/
+*.pyc
+data/dvrp.db
+data/traces/
+data/experiments/
+.env
