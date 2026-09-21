@@ -1,6 +1,6 @@
 """Deployable API routes backed by a request-scoped SQLite connection."""
 from __future__ import annotations
-import hashlib,json,os,shutil,sqlite3,time
+import copy,hashlib,json,os,shutil,sqlite3,time
 from datetime import datetime,timezone
 from pathlib import Path
 from typing import Any
@@ -38,6 +38,10 @@ class ScenarioCreate(BaseModel):
 class ScenarioResponse(BaseModel): id:str; created_at:str; params:dict[str,Any]; scenario:dict[str,Any]
 class RunCreate(BaseModel): scenario_id:str; strategy:str=Field(pattern='^(greedy_insertion|insertion_2opt_star|tabu_search)$'); budget:dict[str,Any]=Field(default_factory=dict)
 class RunResponse(BaseModel): run_id:str; status:str; metrics:dict[str,Any]|None=None
+class CompareCreate(BaseModel):
+    scenario_id:str
+    strategies:list[str]=Field(default_factory=lambda:STRATEGIES.copy())
+    budget:dict[str,Any]=Field(default_factory=dict)
 
 def utcnow()->str:return datetime.now(timezone.utc).isoformat()
 def scenario_hash(params:dict[str,Any])->str:return hashlib.sha256(json.dumps(params,sort_keys=True).encode()).hexdigest()[:24]
@@ -55,6 +59,10 @@ def run_engine(scenario, strategy_name:str,budget:dict[str,Any])->tuple[dict[str
     state=EngineState(scenario); strategy=choose_strategy(strategy_name,budget); simulator=Simulator(state,strategy); started=time.perf_counter(); final=simulator.run(); elapsed=time.perf_counter()-started
     metrics={'total_distance':total_distance(final),'mean_response_time_ms':float(np.mean(simulator.response_times)) if simulator.response_times else 0.,'max_response_time_ms':max(simulator.response_times,default=0.),'route_disruption':simulator.route_disruption,'evaluations':simulator.total_evaluations,'tabu_evaluations':getattr(strategy,'tabu_evaluations',0),'improving_moves_found':getattr(strategy,'improving_moves_found',0),'accepted_moves':strategy.accepted_moves,'rejected_moves':strategy.rejected_moves,'iterations':strategy.iterations,'customers_served':sum(s==RequestState.ASSIGNED for s in final.request_states.values()),'customers_unserved':sum(s!=RequestState.ASSIGNED for s in final.request_states.values()),'pending_pool_size':sum(s==RequestState.AVAILABLE for s in final.request_states.values()),'feasibility_violations':sum(sum(final.requests[r].demand for r in v.route)>v.capacity for v in final.vehicles.values()),'phase_timings_ms':simulator.phase_timings_ms,'compute_time_s':elapsed,'total_time_s':elapsed}
     return metrics,simulator.trace
+def persist_run(scenario_id:str,strategy:str,budget:dict[str,Any],scenario)->RunResponse:
+    metrics,trace=run_engine(copy.deepcopy(scenario),strategy,budget); run_id=hashlib.sha256(f'{scenario_id}{strategy}{time.time_ns()}'.encode()).hexdigest()[:24]; trace_path=ROOT/'data'/'traces'/f'{run_id}.jsonl'; trace_path.parent.mkdir(parents=True,exist_ok=True); trace_path.write_text(''.join(json.dumps(event)+'\n' for event in trace),encoding='utf8')
+    with get_conn() as conn: conn.execute('INSERT INTO runs VALUES (?,?,?,?,?,?,?,?,?,?,?)',(run_id,scenario_id,strategy,json.dumps(budget),'{}','0.1.0',1,'finished',json.dumps(metrics),str(trace_path),utcnow()))
+    return RunResponse(run_id=run_id,status='finished',metrics=metrics)
 
 @router.get('/health',response_model=HealthResponse)
 def health_check(): ensure_database(); return HealthResponse(timestamp=utcnow())
@@ -75,9 +83,15 @@ def start_simulation(request:RunCreate):
     with get_conn() as conn: row=conn.execute('SELECT scenario_json FROM scenarios WHERE id=?',(request.scenario_id,)).fetchone()
     if not row: raise HTTPException(404,'Scenario not found')
     from engine.models import Scenario
-    metrics,trace=run_engine(Scenario(**json.loads(row['scenario_json'])),request.strategy,request.budget); run_id=hashlib.sha256(f'{request.scenario_id}{request.strategy}{time.time_ns()}'.encode()).hexdigest()[:24]; trace_path=ROOT/'data'/'traces'/f'{run_id}.jsonl'; trace_path.parent.mkdir(parents=True,exist_ok=True); trace_path.write_text(''.join(json.dumps(event)+'\n' for event in trace),encoding='utf8')
-    with get_conn() as conn: conn.execute('INSERT INTO runs VALUES (?,?,?,?,?,?,?,?,?,?,?)',(run_id,request.scenario_id,request.strategy,json.dumps(request.budget),'{}','0.1.0',1,'finished',json.dumps(metrics),str(trace_path),utcnow()))
-    return RunResponse(run_id=run_id,status='finished',metrics=metrics)
+    return persist_run(request.scenario_id,request.strategy,request.budget,Scenario(**json.loads(row['scenario_json'])))
+@router.post('/compare')
+def compare_scenario(request:CompareCreate):
+    if not request.strategies or any(strategy not in STRATEGIES for strategy in request.strategies): raise HTTPException(422,'Strategies must be drawn from A, B, and C')
+    with get_conn() as conn: row=conn.execute('SELECT scenario_json FROM scenarios WHERE id=?',(request.scenario_id,)).fetchone()
+    if not row: raise HTTPException(404,'Scenario not found')
+    from engine.models import Scenario
+    scenario=Scenario(**json.loads(row['scenario_json'])); runs=[persist_run(request.scenario_id,strategy,request.budget,scenario) for strategy in request.strategies]
+    return {'scenario_id':request.scenario_id,'runs':[run.model_dump() for run in runs]}
 @router.get('/simulations/{run_id}',response_model=RunResponse)
 def get_simulation(run_id:str):
     with get_conn() as conn: row=conn.execute('SELECT status,metrics_json FROM runs WHERE id=?',(run_id,)).fetchone()
