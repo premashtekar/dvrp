@@ -1,50 +1,50 @@
-{"time": 0.0, "event": "request_assigned", "request_id": 2, "evaluations": 1}
-{"time": 0.0, "event": "request_assigned", "request_id": 4, "evaluations": 2}
-{"time": 0.0, "event": "request_assigned", "request_id": 8, "evaluations": 4}
-{"time": 0.0, "event": "request_assigned", "request_id": 9, "evaluations": 7}
-{"time": 0.0, "event": "request_assigned", "request_id": 10, "evaluations": 8}
-{"time": 0.0, "event": "request_assigned", "request_id": 12, "evaluations": 11}
-{"time": 0.0, "event": "request_assigned", "request_id": 16, "evaluations": 12}
-{"time": 0.0, "event": "request_assigned", "request_id": 18, "evaluations": 13}
-{"time": 0.0, "event": "request_assigned", "request_id": 19, "evaluations": 14}
-{"time": 0.0, "event": "request_assigned", "request_id": 20, "evaluations": 15}
-{"time": 0.0, "event": "request_assigned", "request_id": 22, "evaluations": 16}
-{"time": 0.0, "event": "request_assigned", "request_id": 25, "evaluations": 17}
-{"time": 0.0, "event": "request_assigned", "request_id": 26, "evaluations": 18}
-{"time": 0.0, "event": "request_assigned", "request_id": 28, "evaluations": 19}
-{"time": 0.0, "event": "request_assigned", "request_id": 29, "evaluations": 20}
-{"time": 0.0, "event": "request_assigned", "request_id": 31, "evaluations": 21}
-{"time": 0.0, "event": "request_assigned", "request_id": 34, "evaluations": 22}
-{"time": 0.0, "event": "request_assigned", "request_id": 35, "evaluations": 23}
-{"time": 0.0, "event": "request_assigned", "request_id": 36, "evaluations": 24}
-{"time": 0.0, "event": "request_assigned", "request_id": 37, "evaluations": 25}
-{"time": 0.0, "event": "request_assigned", "request_id": 39, "evaluations": 26}
-{"time": 0.0, "event": "request_assigned", "request_id": 40, "evaluations": 27}
-{"time": 0.0, "event": "request_assigned", "request_id": 41, "evaluations": 28}
-{"time": 0.0, "event": "request_assigned", "request_id": 43, "evaluations": 29}
-{"time": 0.0, "event": "request_assigned", "request_id": 44, "evaluations": 30}
-{"time": 0.0, "event": "request_assigned", "request_id": 45, "evaluations": 31}
-{"time": 0.0, "event": "request_assigned", "request_id": 46, "evaluations": 32}
-{"time": 0.0, "event": "request_assigned", "request_id": 47, "evaluations": 33}
-{"time": 0.0, "event": "request_assigned", "request_id": 48, "evaluations": 34}
-{"time": 0.0, "event": "request_assigned", "request_id": 49, "evaluations": 35}
-{"time": 38.55019298882527, "event": "request_assigned", "request_id": 27, "evaluations": 36}
-{"time": 88.23858445994077, "event": "request_assigned", "request_id": 13, "evaluations": 37}
-{"time": 101.37490347599834, "event": "request_assigned", "request_id": 7, "evaluations": 38}
-{"time": 118.33126100699758, "event": "request_assigned", "request_id": 11, "evaluations": 39}
-{"time": 157.0399761771925, "event": "request_assigned", "request_id": 1, "evaluations": 40}
-{"time": 203.8346264091188, "event": "request_assigned", "request_id": 14, "evaluations": 41}
-{"time": 204.21987963105954, "event": "request_assigned", "request_id": 42, "evaluations": 42}
-{"time": 223.12856952569348, "event": "request_assigned", "request_id": 33, "evaluations": 43}
-{"time": 249.0987677300121, "event": "request_assigned", "request_id": 17, "evaluations": 44}
-{"time": 265.45059093545024, "event": "request_assigned", "request_id": 5, "evaluations": 45}
-{"time": 266.21869451923584, "event": "request_assigned", "request_id": 38, "evaluations": 46}
-{"time": 289.1778283130295, "event": "request_assigned", "request_id": 0, "evaluations": 47}
-{"time": 321.7898706383484, "event": "request_assigned", "request_id": 15, "evaluations": 48}
-{"time": 322.3786346563897, "event": "request_assigned", "request_id": 21, "evaluations": 49}
-{"time": 352.9758935134751, "event": "request_assigned", "request_id": 23, "evaluations": 50}
-{"time": 371.19392746359136, "event": "request_assigned", "request_id": 3, "evaluations": 51}
-{"time": 401.48254387930444, "event": "request_assigned", "request_id": 30, "evaluations": 52}
-{"time": 422.3334648163122, "event": "request_assigned", "request_id": 32, "evaluations": 53}
-{"time": 423.99144666023074, "event": "request_assigned", "request_id": 6, "evaluations": 54}
-{"time": 460.6981572992573, "event": "request_assigned", "request_id": 24, "evaluations": 55}
+{"time": 0.0, "event": "request_assigned", "request_id": 2, "evaluations": 1, "response_time_ms": 0.895200006198138}
+{"time": 0.0, "event": "request_assigned", "request_id": 4, "evaluations": 1, "response_time_ms": 0.07029999687802047}
+{"time": 0.0, "event": "request_assigned", "request_id": 8, "evaluations": 2, "response_time_ms": 0.17349999689031392}
+{"time": 0.0, "event": "request_assigned", "request_id": 9, "evaluations": 3, "response_time_ms": 0.3539000026648864}
+{"time": 0.0, "event": "request_assigned", "request_id": 10, "evaluations": 1, "response_time_ms": 0.1804999919841066}
+{"time": 0.0, "event": "request_assigned", "request_id": 12, "evaluations": 3, "response_time_ms": 0.643599996692501}
+{"time": 0.0, "event": "request_assigned", "request_id": 16, "evaluations": 1, "response_time_ms": 0.2813000028254464}
+{"time": 0.0, "event": "request_assigned", "request_id": 18, "evaluations": 1, "response_time_ms": 0.35459999344311655}
+{"time": 0.0, "event": "request_assigned", "request_id": 19, "evaluations": 1, "response_time_ms": 0.4415000003064051}
+{"time": 0.0, "event": "request_assigned", "request_id": 20, "evaluations": 1, "response_time_ms": 0.5423999973572791}
+{"time": 0.0, "event": "request_assigned", "request_id": 22, "evaluations": 1, "response_time_ms": 0.6607000104850158}
+{"time": 0.0, "event": "request_assigned", "request_id": 25, "evaluations": 1, "response_time_ms": 0.7939000061014667}
+{"time": 0.0, "event": "request_assigned", "request_id": 26, "evaluations": 1, "response_time_ms": 0.9414000087417662}
+{"time": 0.0, "event": "request_assigned", "request_id": 28, "evaluations": 1, "response_time_ms": 1.2556000001495704}
+{"time": 0.0, "event": "request_assigned", "request_id": 29, "evaluations": 1, "response_time_ms": 1.2962000037077814}
+{"time": 0.0, "event": "request_assigned", "request_id": 31, "evaluations": 1, "response_time_ms": 2.827499993145466}
+{"time": 0.0, "event": "request_assigned", "request_id": 34, "evaluations": 1, "response_time_ms": 3.319199997349642}
+{"time": 0.0, "event": "request_assigned", "request_id": 35, "evaluations": 1, "response_time_ms": 2.100500001688488}
+{"time": 0.0, "event": "request_assigned", "request_id": 36, "evaluations": 1, "response_time_ms": 2.1951999951852486}
+{"time": 0.0, "event": "request_assigned", "request_id": 37, "evaluations": 1, "response_time_ms": 2.475200002663769}
+{"time": 0.0, "event": "request_assigned", "request_id": 39, "evaluations": 1, "response_time_ms": 2.997899995534681}
+{"time": 0.0, "event": "request_assigned", "request_id": 40, "evaluations": 1, "response_time_ms": 5.854900009580888}
+{"time": 0.0, "event": "request_assigned", "request_id": 41, "evaluations": 1, "response_time_ms": 3.9508999907411635}
+{"time": 0.0, "event": "request_assigned", "request_id": 43, "evaluations": 1, "response_time_ms": 3.8889999996172264}
+{"time": 0.0, "event": "request_assigned", "request_id": 44, "evaluations": 1, "response_time_ms": 4.392399991047569}
+{"time": 0.0, "event": "request_assigned", "request_id": 45, "evaluations": 1, "response_time_ms": 7.728500000666827}
+{"time": 0.0, "event": "request_assigned", "request_id": 46, "evaluations": 1, "response_time_ms": 5.1703000062843785}
+{"time": 0.0, "event": "request_assigned", "request_id": 47, "evaluations": 1, "response_time_ms": 9.13780000701081}
+{"time": 0.0, "event": "request_assigned", "request_id": 48, "evaluations": 1, "response_time_ms": 6.299000000581145}
+{"time": 0.0, "event": "request_assigned", "request_id": 49, "evaluations": 1, "response_time_ms": 9.79929999448359}
+{"time": 38.55019298882527, "event": "request_assigned", "request_id": 27, "evaluations": 1, "response_time_ms": 7.599099990329705}
+{"time": 88.23858445994077, "event": "request_assigned", "request_id": 13, "evaluations": 1, "response_time_ms": 11.56769999943208}
+{"time": 101.37490347599834, "event": "request_assigned", "request_id": 7, "evaluations": 1, "response_time_ms": 10.92840000637807}
+{"time": 118.33126100699758, "event": "request_assigned", "request_id": 11, "evaluations": 1, "response_time_ms": 11.01429999107495}
+{"time": 157.0399761771925, "event": "request_assigned", "request_id": 1, "evaluations": 1, "response_time_ms": 12.882900002296083}
+{"time": 203.8346264091188, "event": "request_assigned", "request_id": 14, "evaluations": 1, "response_time_ms": 14.303100004326552}
+{"time": 204.21987963105954, "event": "request_assigned", "request_id": 42, "evaluations": 1, "response_time_ms": 14.583500000298955}
+{"time": 223.12856952569348, "event": "request_assigned", "request_id": 33, "evaluations": 1, "response_time_ms": 15.165999997407198}
+{"time": 249.0987677300121, "event": "request_assigned", "request_id": 17, "evaluations": 1, "response_time_ms": 21.47310000145808}
+{"time": 265.45059093545024, "event": "request_assigned", "request_id": 5, "evaluations": 1, "response_time_ms": 17.196799992234446}
+{"time": 266.21869451923584, "event": "request_assigned", "request_id": 38, "evaluations": 1, "response_time_ms": 18.805899992003106}
+{"time": 289.1778283130295, "event": "request_assigned", "request_id": 0, "evaluations": 1, "response_time_ms": 20.0120999943465}
+{"time": 321.7898706383484, "event": "request_assigned", "request_id": 15, "evaluations": 1, "response_time_ms": 24.284700004500337}
+{"time": 322.3786346563897, "event": "request_assigned", "request_id": 21, "evaluations": 1, "response_time_ms": 21.78900000581052}
+{"time": 352.9758935134751, "event": "request_assigned", "request_id": 23, "evaluations": 1, "response_time_ms": 24.404700001468882}
+{"time": 371.19392746359136, "event": "request_assigned", "request_id": 3, "evaluations": 1, "response_time_ms": 27.17879999545403}
+{"time": 401.48254387930444, "event": "request_assigned", "request_id": 30, "evaluations": 1, "response_time_ms": 28.2638000062434}
+{"time": 422.3334648163122, "event": "request_assigned", "request_id": 32, "evaluations": 1, "response_time_ms": 26.52230000239797}
+{"time": 423.99144666023074, "event": "request_assigned", "request_id": 6, "evaluations": 1, "response_time_ms": 30.712099993252195}
+{"time": 460.6981572992573, "event": "request_assigned", "request_id": 24, "evaluations": 1, "response_time_ms": 32.38630000851117}

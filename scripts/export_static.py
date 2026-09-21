@@ -1,22 +1,25 @@
 import sqlite3
 import json
 import os
-from datetime import datetime
-import csv
+from datetime import datetime, timezone
 from pathlib import Path
+from collections import defaultdict
+import csv
+
+from engine.stats import mean, std, sem, friedman, wilcoxon_pairwise, bootstrap_ci
 
 # Paths
 DB_PATH = Path('data/dvrp.db')
 OUTPUT_JSON = Path('web/public/demo/results.json')
+CSV_PATH = Path('web/public/demo/aggregated.csv')
 
 # Load experiment runs
 conn = sqlite3.connect(DB_PATH)
 cur = conn.cursor()
-cur.execute("SELECT run_id, strategy, metrics_json, params_json FROM experiment_runs WHERE experiment_id='pilot_v2'")
+cur.execute("SELECT run_id, strategy, metrics_json, params_json FROM experiment_runs WHERE experiment_id='pilot_v3'")
 rows = cur.fetchall()
 conn.close()
 
-# Group by (scenario_customers, scenario_dynamism, seed)
 groups = {}
 for run_id, strategy, metrics_json, params_json in rows:
     metrics = json.loads(metrics_json)
@@ -31,61 +34,83 @@ for run_id, strategy, metrics_json, params_json in rows:
     }
 
 per_run = []
-strategies_expected = {'greedy_insertion', 'insertion_2opt_star', 'tabu_search'}
+strategies_expected = ['greedy_insertion', 'insertion_2opt_star', 'tabu_search']
 for sig, strats in groups.items():
-    if set(strats.keys()) == strategies_expected:
+    if set(strats.keys()) == set(strategies_expected):
         for s in strats.values():
+            s['dynamism'] = sig[1]
             per_run.append(s)
 
-# Load aggregated stats (we'll just compute them here instead of CSV to ensure they match triples)
-agg = {}
-metric_by_strategy = {}
+agg_by_dyn_strat = defaultdict(list)
+distance_pooled = {s: [] for s in strategies_expected}
 for entry in per_run:
     strat = entry['strategy']
-    metrics = entry['metrics']
-    agg.setdefault(strat, {'total_time_s': [], 'evaluations': [], 'delta_distance': []})
-    agg[strat]['total_time_s'].append(metrics.get('total_time_s', 0))
-    agg[strat]['evaluations'].append(metrics.get('evaluations', 0))
-    agg[strat]['delta_distance'].append(metrics.get('delta_distance', 0))
+    dyn = entry['dynamism']
+    d = entry['metrics'].get('total_distance', 0)
+    agg_by_dyn_strat[(dyn, strat)].append(d)
     
-    metric_by_strategy.setdefault(strat, []).append(metrics.get('total_time_s', 0))
+# for paired stats, we must align the same instances
+aligned_distances = []
+for sig, strats in groups.items():
+    if set(strats.keys()) == set(strategies_expected):
+        aligned_distances.append([strats[s]['metrics'].get('total_distance', 0) for s in strategies_expected])
+
+# paired tests
+friedman_stat, friedman_p = friedman(list(zip(*aligned_distances))) if aligned_distances else (0.0, 1.0)
+wilcoxon_results = wilcoxon_pairwise(list(zip(*aligned_distances))) if aligned_distances else []
+
+paired_diffs = []
+if aligned_distances:
+    for (i, j, stat, p, reject) in wilcoxon_results:
+        diffs = [row[i] - row[j] for row in aligned_distances]
+        m_diff = mean(diffs)
+        ci_lower, ci_upper = bootstrap_ci(diffs)
+        paired_diffs.append({
+            'compare': f"{strategies_expected[i]} vs {strategies_expected[j]}",
+            'mean_diff': m_diff,
+            'ci_95': [ci_lower, ci_upper],
+            'p_value': p,
+            'significant_holm': reject
+        })
 
 aggregated = []
-for strat, vals in agg.items():
-    mean_time = sum(vals['total_time_s']) / len(vals['total_time_s']) if vals['total_time_s'] else 0
-    mean_eval = sum(vals['evaluations']) / len(vals['evaluations']) if vals['evaluations'] else 0
-    mean_delta = sum(vals['delta_distance']) / len(vals['delta_distance']) if vals['delta_distance'] else 0
+for (dyn, strat), dists in agg_by_dyn_strat.items():
     aggregated.append({
+        'dynamism': dyn,
         'strategy': strat,
-        'mean_time_s': mean_time,
-        'mean_evaluations': mean_eval,
-        'mean_delta_distance': mean_delta
+        'mean_distance': mean(dists),
+        'sd_distance': std(dists) if len(dists)>1 else 0,
+        'se_distance': sem(dists),
+        'n': len(dists)
     })
 
-try:
-    from engine.stats import compute_friedman_wilcoxon
-    friedman, wilcoxon = compute_friedman_wilcoxon(metric_by_strategy)
-    paired_stats = {'friedman': friedman, 'wilcoxon': wilcoxon}
-except Exception as e:
-    paired_stats = {'error': str(e)}
-
+# Gather all data for JSON
 result = {
-    'generated_at': datetime.utcnow().isoformat() + 'Z',
+    'generated_at': datetime.now(timezone.utc).isoformat(),
     'seed_count': 3,
     'config': {
         'customers': [50],
-        'vehicles': 5,
         'dynamism': [0.1, 0.4, 0.8],
-        'strategies': ['greedy_insertion', 'insertion_2opt_star', 'tabu_search'],
+        'strategies': strategies_expected,
         'seeds': [1, 2, 3]
     },
     'per_run': per_run,
     'aggregated': aggregated,
-    'paired_stats': paired_stats
+    'paired_stats': {
+        'friedman': {'statistic': friedman_stat, 'p_value': friedman_p},
+        'pairwise': paired_diffs
+    }
 }
 
 OUTPUT_JSON.parent.mkdir(parents=True, exist_ok=True)
 with OUTPUT_JSON.open('w') as f:
     json.dump(result, f, indent=2)
 
+# Write CSV
+with CSV_PATH.open('w', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=['dynamism', 'strategy', 'mean_distance', 'sd_distance', 'se_distance', 'n'])
+    writer.writeheader()
+    for row in aggregated:
+        writer.writerow(row)
+        
 print('Exported', OUTPUT_JSON, 'with', len(per_run), 'rows.')

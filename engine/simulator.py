@@ -1,17 +1,10 @@
-# engine/simulator.py
-"""Event‑driven simulator for the DVRP engine.
-It processes a pre‑generated list of request arrivals (time‑ordered).
-When a request is released, the configured ``Strategy`` is invoked to
-assign it to a vehicle.  The simulator records a JSONL trace of events
-for later replay.
-"""
-
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 from .state import EngineState, RequestState
 from .models import Request
@@ -23,37 +16,33 @@ class Event:
     request_id: int
 
 class Simulator:
-    """Simple deterministic simulator.
-    Parameters
-    ----------
-    state: EngineState
-        The initial engine state (scenario already loaded).
-    strategy: Strategy
-        Strategy to handle each new request.
-    """
-
     def __init__(self, state: EngineState, strategy: Strategy):
         self.state = state
         self.strategy = strategy
         self.trace: List[dict] = []
+        self.response_times = []
+        self.total_evaluations = 0
 
     def run(self) -> EngineState:
-        # collect all release events
         events = [Event(req.release_time, rid) for rid, req in self.state.requests.items()]
         events.sort(key=lambda e: e.time)
         for ev in events:
-            # advance clock and release request
             self.state.advance_time(ev.time)
             req = self.state.requests[ev.request_id]
-            # only handle if now AVAILABLE
             if self.state.request_states[ev.request_id] == RequestState.AVAILABLE:
+                t0 = time.perf_counter()
                 evals, new_state = self.strategy.update(self.state, req)
+                t1 = time.perf_counter()
+                self.total_evaluations += evals
+                rt_ms = (t1 - t0) * 1000
+                self.response_times.append(rt_ms)
                 self.state = new_state
                 self.trace.append({
                     "time": ev.time,
                     "event": "request_assigned",
                     "request_id": ev.request_id,
                     "evaluations": evals,
+                    "response_time_ms": rt_ms
                 })
         return self.state
 

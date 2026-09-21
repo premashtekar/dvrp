@@ -102,6 +102,7 @@ class TabuSearch(Strategy):
             self._add_tabu(request.request_id, first_vid)
             state.request_states[request.request_id] = RequestState.SERVED
 
+        evals_this_round = 0
         while self.evaluations < self.evaluation_budget:
             moves = []
             moves.extend(self._relocate_moves(state)[:5])
@@ -111,6 +112,7 @@ class TabuSearch(Strategy):
             best = min(moves, key=lambda m: m[-1])
             delta = best[-1]
             self.evaluations += 1
+            evals_this_round += 1
             if delta >= 0: break
 
             if best[0] == 'relocate':
@@ -130,4 +132,4 @@ class TabuSearch(Strategy):
                 route = state.vehicles[vid].route
                 route[i:j + 1] = list(reversed(route[i:j + 1]))
                 
-        return self.evaluations, state
+        return evals_this_round, state

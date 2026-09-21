@@ -1,50 +1,50 @@
-{"time": 0.0, "event": "request_assigned", "request_id": 0, "evaluations": 1}
-{"time": 0.0, "event": "request_assigned", "request_id": 1, "evaluations": 2}
-{"time": 0.0, "event": "request_assigned", "request_id": 2, "evaluations": 4}
-{"time": 0.0, "event": "request_assigned", "request_id": 3, "evaluations": 5}
-{"time": 0.0, "event": "request_assigned", "request_id": 4, "evaluations": 6}
-{"time": 0.0, "event": "request_assigned", "request_id": 5, "evaluations": 7}
-{"time": 0.0, "event": "request_assigned", "request_id": 6, "evaluations": 8}
-{"time": 0.0, "event": "request_assigned", "request_id": 7, "evaluations": 9}
-{"time": 0.0, "event": "request_assigned", "request_id": 8, "evaluations": 10}
-{"time": 0.0, "event": "request_assigned", "request_id": 9, "evaluations": 11}
-{"time": 0.0, "event": "request_assigned", "request_id": 10, "evaluations": 12}
-{"time": 0.0, "event": "request_assigned", "request_id": 11, "evaluations": 13}
-{"time": 0.0, "event": "request_assigned", "request_id": 13, "evaluations": 14}
-{"time": 0.0, "event": "request_assigned", "request_id": 14, "evaluations": 15}
-{"time": 0.0, "event": "request_assigned", "request_id": 15, "evaluations": 16}
-{"time": 0.0, "event": "request_assigned", "request_id": 16, "evaluations": 17}
-{"time": 0.0, "event": "request_assigned", "request_id": 17, "evaluations": 18}
-{"time": 0.0, "event": "request_assigned", "request_id": 18, "evaluations": 19}
-{"time": 0.0, "event": "request_assigned", "request_id": 19, "evaluations": 20}
-{"time": 0.0, "event": "request_assigned", "request_id": 20, "evaluations": 21}
-{"time": 0.0, "event": "request_assigned", "request_id": 21, "evaluations": 22}
-{"time": 0.0, "event": "request_assigned", "request_id": 22, "evaluations": 23}
-{"time": 0.0, "event": "request_assigned", "request_id": 23, "evaluations": 24}
-{"time": 0.0, "event": "request_assigned", "request_id": 24, "evaluations": 25}
-{"time": 0.0, "event": "request_assigned", "request_id": 25, "evaluations": 26}
-{"time": 0.0, "event": "request_assigned", "request_id": 26, "evaluations": 27}
-{"time": 0.0, "event": "request_assigned", "request_id": 27, "evaluations": 28}
-{"time": 0.0, "event": "request_assigned", "request_id": 28, "evaluations": 29}
-{"time": 0.0, "event": "request_assigned", "request_id": 29, "evaluations": 30}
-{"time": 0.0, "event": "request_assigned", "request_id": 30, "evaluations": 31}
-{"time": 0.0, "event": "request_assigned", "request_id": 31, "evaluations": 32}
-{"time": 0.0, "event": "request_assigned", "request_id": 32, "evaluations": 33}
-{"time": 0.0, "event": "request_assigned", "request_id": 33, "evaluations": 34}
-{"time": 0.0, "event": "request_assigned", "request_id": 35, "evaluations": 35}
-{"time": 0.0, "event": "request_assigned", "request_id": 36, "evaluations": 36}
-{"time": 0.0, "event": "request_assigned", "request_id": 37, "evaluations": 37}
-{"time": 0.0, "event": "request_assigned", "request_id": 38, "evaluations": 38}
-{"time": 0.0, "event": "request_assigned", "request_id": 40, "evaluations": 39}
-{"time": 0.0, "event": "request_assigned", "request_id": 41, "evaluations": 40}
-{"time": 0.0, "event": "request_assigned", "request_id": 42, "evaluations": 41}
-{"time": 0.0, "event": "request_assigned", "request_id": 43, "evaluations": 42}
-{"time": 0.0, "event": "request_assigned", "request_id": 44, "evaluations": 43}
-{"time": 0.0, "event": "request_assigned", "request_id": 45, "evaluations": 44}
-{"time": 0.0, "event": "request_assigned", "request_id": 46, "evaluations": 45}
-{"time": 0.0, "event": "request_assigned", "request_id": 47, "evaluations": 46}
-{"time": 0.0, "event": "request_assigned", "request_id": 48, "evaluations": 47}
-{"time": 0.0, "event": "request_assigned", "request_id": 49, "evaluations": 48}
-{"time": 38.55019298882527, "event": "request_assigned", "request_id": 39, "evaluations": 49}
-{"time": 101.37490347599834, "event": "request_assigned", "request_id": 12, "evaluations": 50}
-{"time": 352.9758935134751, "event": "request_assigned", "request_id": 34, "evaluations": 51}
+{"time": 0.0, "event": "request_assigned", "request_id": 0, "evaluations": 1, "response_time_ms": 0.905699998838827}
+{"time": 0.0, "event": "request_assigned", "request_id": 1, "evaluations": 1, "response_time_ms": 0.06890000076964498}
+{"time": 0.0, "event": "request_assigned", "request_id": 2, "evaluations": 2, "response_time_ms": 0.1745000045048073}
+{"time": 0.0, "event": "request_assigned", "request_id": 3, "evaluations": 1, "response_time_ms": 0.1210999907925725}
+{"time": 0.0, "event": "request_assigned", "request_id": 4, "evaluations": 1, "response_time_ms": 0.16460000188089907}
+{"time": 0.0, "event": "request_assigned", "request_id": 5, "evaluations": 1, "response_time_ms": 0.21829998877365142}
+{"time": 0.0, "event": "request_assigned", "request_id": 6, "evaluations": 1, "response_time_ms": 0.2826999989338219}
+{"time": 0.0, "event": "request_assigned", "request_id": 7, "evaluations": 1, "response_time_ms": 0.3749000024981797}
+{"time": 0.0, "event": "request_assigned", "request_id": 8, "evaluations": 1, "response_time_ms": 0.4478000046219677}
+{"time": 0.0, "event": "request_assigned", "request_id": 9, "evaluations": 1, "response_time_ms": 0.5799999926239252}
+{"time": 0.0, "event": "request_assigned", "request_id": 10, "evaluations": 1, "response_time_ms": 0.6907000060891733}
+{"time": 0.0, "event": "request_assigned", "request_id": 11, "evaluations": 1, "response_time_ms": 0.8047999872360379}
+{"time": 0.0, "event": "request_assigned", "request_id": 13, "evaluations": 1, "response_time_ms": 2.13719999010209}
+{"time": 0.0, "event": "request_assigned", "request_id": 14, "evaluations": 1, "response_time_ms": 2.82839999999851}
+{"time": 0.0, "event": "request_assigned", "request_id": 15, "evaluations": 1, "response_time_ms": 1.4717000012751669}
+{"time": 0.0, "event": "request_assigned", "request_id": 16, "evaluations": 1, "response_time_ms": 1.7351999995298684}
+{"time": 0.0, "event": "request_assigned", "request_id": 17, "evaluations": 1, "response_time_ms": 1.7368999979225919}
+{"time": 0.0, "event": "request_assigned", "request_id": 18, "evaluations": 1, "response_time_ms": 1.9651000038720667}
+{"time": 0.0, "event": "request_assigned", "request_id": 19, "evaluations": 1, "response_time_ms": 2.208500009146519}
+{"time": 0.0, "event": "request_assigned", "request_id": 20, "evaluations": 1, "response_time_ms": 2.6409999991301447}
+{"time": 0.0, "event": "request_assigned", "request_id": 21, "evaluations": 1, "response_time_ms": 5.799200007459149}
+{"time": 0.0, "event": "request_assigned", "request_id": 22, "evaluations": 1, "response_time_ms": 3.347799996845424}
+{"time": 0.0, "event": "request_assigned", "request_id": 23, "evaluations": 1, "response_time_ms": 3.516600001603365}
+{"time": 0.0, "event": "request_assigned", "request_id": 24, "evaluations": 1, "response_time_ms": 3.9628000085940585}
+{"time": 0.0, "event": "request_assigned", "request_id": 25, "evaluations": 1, "response_time_ms": 7.105299999238923}
+{"time": 0.0, "event": "request_assigned", "request_id": 26, "evaluations": 1, "response_time_ms": 4.728700005216524}
+{"time": 0.0, "event": "request_assigned", "request_id": 27, "evaluations": 1, "response_time_ms": 6.751099994289689}
+{"time": 0.0, "event": "request_assigned", "request_id": 28, "evaluations": 1, "response_time_ms": 7.562699989648536}
+{"time": 0.0, "event": "request_assigned", "request_id": 29, "evaluations": 1, "response_time_ms": 7.096700006513856}
+{"time": 0.0, "event": "request_assigned", "request_id": 30, "evaluations": 1, "response_time_ms": 9.52589999360498}
+{"time": 0.0, "event": "request_assigned", "request_id": 31, "evaluations": 1, "response_time_ms": 7.83170000067912}
+{"time": 0.0, "event": "request_assigned", "request_id": 32, "evaluations": 1, "response_time_ms": 10.46459999633953}
+{"time": 0.0, "event": "request_assigned", "request_id": 33, "evaluations": 1, "response_time_ms": 11.55060000019148}
+{"time": 0.0, "event": "request_assigned", "request_id": 35, "evaluations": 1, "response_time_ms": 9.511800002655946}
+{"time": 0.0, "event": "request_assigned", "request_id": 36, "evaluations": 1, "response_time_ms": 13.811299999360926}
+{"time": 0.0, "event": "request_assigned", "request_id": 37, "evaluations": 1, "response_time_ms": 14.971399999922141}
+{"time": 0.0, "event": "request_assigned", "request_id": 38, "evaluations": 1, "response_time_ms": 14.872700005071238}
+{"time": 0.0, "event": "request_assigned", "request_id": 40, "evaluations": 1, "response_time_ms": 16.864000004716218}
+{"time": 0.0, "event": "request_assigned", "request_id": 41, "evaluations": 1, "response_time_ms": 16.535500006284565}
+{"time": 0.0, "event": "request_assigned", "request_id": 42, "evaluations": 1, "response_time_ms": 17.736099995090626}
+{"time": 0.0, "event": "request_assigned", "request_id": 43, "evaluations": 1, "response_time_ms": 18.493700001272373}
+{"time": 0.0, "event": "request_assigned", "request_id": 44, "evaluations": 1, "response_time_ms": 19.6350999904098}
+{"time": 0.0, "event": "request_assigned", "request_id": 45, "evaluations": 1, "response_time_ms": 24.492900003679097}
+{"time": 0.0, "event": "request_assigned", "request_id": 46, "evaluations": 1, "response_time_ms": 21.793100007926114}
+{"time": 0.0, "event": "request_assigned", "request_id": 47, "evaluations": 1, "response_time_ms": 22.19899999909103}
+{"time": 0.0, "event": "request_assigned", "request_id": 48, "evaluations": 1, "response_time_ms": 26.196899998467416}
+{"time": 0.0, "event": "request_assigned", "request_id": 49, "evaluations": 1, "response_time_ms": 27.670399998896755}
+{"time": 38.55019298882527, "event": "request_assigned", "request_id": 39, "evaluations": 1, "response_time_ms": 26.283200000762008}
+{"time": 101.37490347599834, "event": "request_assigned", "request_id": 12, "evaluations": 1, "response_time_ms": 35.44110000075307}
+{"time": 352.9758935134751, "event": "request_assigned", "request_id": 34, "evaluations": 1, "response_time_ms": 33.246300008613616}

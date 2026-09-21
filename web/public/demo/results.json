@@ -1,11 +1,10 @@
 {
-  "generated_at": "2026-09-21T01:50:03.343370Z",
+  "generated_at": "2026-09-21T02:02:30.616224+00:00",
   "seed_count": 3,
   "config": {
     "customers": [
       50
     ],
-    "vehicles": 5,
     "dynamism": [
       0.1,
       0.4,
@@ -24,270 +23,575 @@
   },
   "per_run": [
     {
-      "run_id": "ff2ae525ba8a4a2e",
+      "run_id": "b21f9a80753cfd26",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.001259199998457916,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.0031941000052029267,
+        "total_distance": 1139.4538401949517,
+        "mean_response_time_ms": 0.049241999513469636,
+        "max_response_time_ms": 1.3709000049857423,
+        "route_disruption": 0,
+        "evaluations": 620,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "59703fcde7702e95",
+      "run_id": "b7fe4aca9d33bb56",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0011301999911665916,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.12615609999920707,
+        "total_distance": 1021.435856573153,
+        "mean_response_time_ms": 0.03666200092993677,
+        "max_response_time_ms": 0.9157000022241846,
+        "route_disruption": 918,
+        "evaluations": 1538,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "c22c72468ad4e500",
+      "run_id": "35aa1c47c99787cb",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.3373779999965336,
+        "total_time_s": 0.5476254999957746,
+        "total_distance": 2597.97122584923,
+        "mean_response_time_ms": 10.923851998813916,
+        "max_response_time_ms": 32.53749999566935,
+        "route_disruption": 0,
         "evaluations": 54,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "341841e0b03d6902",
+      "run_id": "a95099fb84b3c002",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.0012117999867768958,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.0023530000034952536,
+        "total_distance": 1180.1541220026086,
+        "mean_response_time_ms": 0.03562799916835502,
+        "max_response_time_ms": 0.8440999954473227,
+        "route_disruption": 0,
+        "evaluations": 642,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "6440c8766a3c9afb",
+      "run_id": "1a6fdaf70767bde5",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0012461000005714595,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.1304212999966694,
+        "total_distance": 1124.1516408316777,
+        "mean_response_time_ms": 0.0812220002990216,
+        "max_response_time_ms": 1.2370999902486801,
+        "route_disruption": 1051,
+        "evaluations": 1693,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "3addddbab59e6d12",
+      "run_id": "e59ee4f37532dcbc",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.3309565000090515,
+        "total_time_s": 0.47139510000124574,
+        "total_distance": 2604.639256196401,
+        "mean_response_time_ms": 9.402729998691939,
+        "max_response_time_ms": 32.30840001197066,
+        "route_disruption": 0,
         "evaluations": 52,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "611e83c23433fccf",
+      "run_id": "887e9e7febdc9e58",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.0025741999997990206,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.0024828000023262575,
+        "total_distance": 1154.2160065788294,
+        "mean_response_time_ms": 0.03796600067289546,
+        "max_response_time_ms": 0.949699999182485,
+        "route_disruption": 0,
+        "evaluations": 663,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "e140d347a1b26de6",
+      "run_id": "b17e42370c4e7765",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0013949999993201345,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.09240639999916311,
+        "total_distance": 1149.6054918914197,
+        "mean_response_time_ms": 0.03950999991502613,
+        "max_response_time_ms": 0.8719000034034252,
+        "route_disruption": 1074,
+        "evaluations": 1737,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "34a9a255abf2da0f",
+      "run_id": "d37de0a834ea2c87",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.33040029999392573,
+        "total_time_s": 0.4718252000020584,
+        "total_distance": 2378.960274354873,
+        "mean_response_time_ms": 9.41112400003476,
+        "max_response_time_ms": 35.44110000075307,
+        "route_disruption": 0,
         "evaluations": 51,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.1
     },
     {
-      "run_id": "9f9dda5b27d6a82d",
+      "run_id": "fd7a6c07e66aa2e6",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.001396600011503324,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.0024871999921742827,
+        "total_distance": 1140.709763126836,
+        "mean_response_time_ms": 0.03651600156445056,
+        "max_response_time_ms": 0.8608999924035743,
+        "route_disruption": 0,
+        "evaluations": 686,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "31f66ef66ea47206",
+      "run_id": "487c3f37a49bc0a6",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0014752999995835125,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.19093310000607744,
+        "total_distance": 1069.8860420237124,
+        "mean_response_time_ms": 0.03671800019219518,
+        "max_response_time_ms": 0.8613000100012869,
+        "route_disruption": 947,
+        "evaluations": 1633,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "6b438aaff1308ced",
+      "run_id": "dfcc3c19ff8ace02",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.3336135999998078,
+        "total_time_s": 0.4660976000013761,
+        "total_distance": 2648.8501934471246,
+        "mean_response_time_ms": 9.295859999547247,
+        "max_response_time_ms": 32.72879999713041,
+        "route_disruption": 0,
         "evaluations": 51,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "150566d1212f81a4",
+      "run_id": "072c1361a11f7627",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.0013326999905984849,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.0037569999985862523,
+        "total_distance": 1164.2901114971394,
+        "mean_response_time_ms": 0.055839998240116984,
+        "max_response_time_ms": 1.371799997286871,
+        "route_disruption": 0,
+        "evaluations": 717,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "c41d68d17f9e8bb0",
+      "run_id": "79dc2244b6abe90f",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0017121999990195036,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.09009189999778755,
+        "total_distance": 1152.2850128060202,
+        "mean_response_time_ms": 0.08964600128820166,
+        "max_response_time_ms": 1.9761000003200024,
+        "route_disruption": 935,
+        "evaluations": 1652,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "0a8cada7c8cedb14",
+      "run_id": "04a4ee6cebd1ef9d",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.3364635000034468,
+        "total_time_s": 0.4819431999931112,
+        "total_distance": 2572.634307573069,
+        "mean_response_time_ms": 9.607630001555663,
+        "max_response_time_ms": 33.784300001570955,
+        "route_disruption": 0,
         "evaluations": 52,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "536217a9f5a7e5bb",
+      "run_id": "81252be4e27fa263",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.0017351999995298684,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.003387099990504794,
+        "total_distance": 1113.4254235238766,
+        "mean_response_time_ms": 0.049810000346042216,
+        "max_response_time_ms": 1.2282999960007146,
+        "route_disruption": 0,
+        "evaluations": 712,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "d7c8df72eb2e4f50",
+      "run_id": "dd593f89619634d6",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.001181999992695637,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.1314056000119308,
+        "total_distance": 1078.9351452258095,
+        "mean_response_time_ms": 0.045408000296447426,
+        "max_response_time_ms": 0.8860000089043751,
+        "route_disruption": 909,
+        "evaluations": 1621,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "46f53cf780bb5ac0",
+      "run_id": "f08fd49ebb803fb5",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.3343509000114864,
+        "total_time_s": 0.47357170000032056,
+        "total_distance": 2491.4712589160104,
+        "mean_response_time_ms": 9.441935999784619,
+        "max_response_time_ms": 32.38630000851117,
+        "route_disruption": 0,
         "evaluations": 55,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.4
     },
     {
-      "run_id": "61c050cd66207ec3",
+      "run_id": "85d2233d6e500855",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.001080499991076067,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.0024067999911494553,
+        "total_distance": 1163.0831115955843,
+        "mean_response_time_ms": 0.03552799898898229,
+        "max_response_time_ms": 0.8617999992566183,
+        "route_disruption": 0,
+        "evaluations": 596,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "03a2b6bc950a5229",
+      "run_id": "1f602db414a0a66c",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0015493999962927774,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.17621309999958612,
+        "total_distance": 1110.0688545975577,
+        "mean_response_time_ms": 0.03769199945963919,
+        "max_response_time_ms": 0.9243999957107008,
+        "route_disruption": 980,
+        "evaluations": 1576,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "d37ee91cf2bd624b",
+      "run_id": "0d55a5f787b71bd5",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.3295298000011826,
+        "total_time_s": 0.4744455000036396,
+        "total_distance": 2486.1200218138283,
+        "mean_response_time_ms": 9.459987998125143,
+        "max_response_time_ms": 32.70759999577422,
+        "route_disruption": 0,
         "evaluations": 54,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "62de3a879c1888f0",
+      "run_id": "61d694af6c74d0e1",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.001353900006506592,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.0024164000060409307,
+        "total_distance": 1148.3112145390364,
+        "mean_response_time_ms": 0.035784000356215984,
+        "max_response_time_ms": 0.8685999928275123,
+        "route_disruption": 0,
+        "evaluations": 608,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "544a900455739466",
+      "run_id": "b7044e7e04822a47",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0011121999996248633,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.10605489999579731,
+        "total_distance": 1151.4776500288654,
+        "mean_response_time_ms": 0.040081998449750245,
+        "max_response_time_ms": 1.050899998517707,
+        "route_disruption": 886,
+        "evaluations": 1494,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "1665e381e0436115",
+      "run_id": "5bbe096adc15e51c",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.32051119999960065,
+        "total_time_s": 0.4775021999957971,
+        "total_distance": 2220.4094851761206,
+        "mean_response_time_ms": 9.520650001068134,
+        "max_response_time_ms": 31.872400009888224,
+        "route_disruption": 0,
         "evaluations": 57,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "6548cc2203677193",
+      "run_id": "402d53c4572ea5ef",
       "strategy": "greedy_insertion",
       "metrics": {
-        "total_time_s": 0.0012351000041235238,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.004108400011318736,
+        "total_distance": 1170.659712655612,
+        "mean_response_time_ms": 0.06404199986718595,
+        "max_response_time_ms": 1.749200004269369,
+        "route_disruption": 0,
+        "evaluations": 742,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "700d7bb4eafa67fc",
+      "run_id": "9d9eb41697291c70",
       "strategy": "insertion_2opt_star",
       "metrics": {
-        "total_time_s": 0.0012664999958360568,
-        "evaluations": 0,
-        "delta_distance": 0.0
-      }
+        "total_time_s": 0.1149779999977909,
+        "total_distance": 1109.221362466534,
+        "mean_response_time_ms": 0.04154200025368482,
+        "max_response_time_ms": 1.0749000066425651,
+        "route_disruption": 786,
+        "evaluations": 1528,
+        "iterations": 1,
+        "feasibility_violations": 0,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     },
     {
-      "run_id": "0e29952438543fb2",
+      "run_id": "095fd00cd5e9feb0",
       "strategy": "tabu_search",
       "metrics": {
-        "total_time_s": 0.36616599999251775,
+        "total_time_s": 0.4948181000072509,
+        "total_distance": 2368.0084761236544,
+        "mean_response_time_ms": 9.866181999677792,
+        "max_response_time_ms": 35.84019999834709,
+        "route_disruption": 0,
         "evaluations": 54,
-        "delta_distance": 0.0
-      }
+        "iterations": 1,
+        "feasibility_violations": 1,
+        "customers_served": 50,
+        "customers_unserved": 0
+      },
+      "dynamism": 0.8
     }
   ],
   "aggregated": [
     {
+      "dynamism": 0.1,
       "strategy": "greedy_insertion",
-      "mean_time_s": 0.0014643555542635214,
-      "mean_evaluations": 0.0,
-      "mean_delta_distance": 0.0
+      "mean_distance": 1157.9413229254633,
+      "sd_distance": 20.604288903467275,
+      "se_distance": 11.89589174487765,
+      "n": 3
     },
     {
+      "dynamism": 0.1,
       "strategy": "insertion_2opt_star",
-      "mean_time_s": 0.0013409888860122818,
-      "mean_evaluations": 0.0,
-      "mean_delta_distance": 0.0
+      "mean_distance": 1098.3976630987502,
+      "sd_distance": 67.85509841718203,
+      "se_distance": 39.1761593370486,
+      "n": 3
     },
     {
+      "dynamism": 0.1,
       "strategy": "tabu_search",
-      "mean_time_s": 0.3354855333341725,
-      "mean_evaluations": 53.333333333333336,
-      "mean_delta_distance": 0.0
+      "mean_distance": 2527.1902521335014,
+      "sd_distance": 128.41421413288793,
+      "se_distance": 74.1399810973971,
+      "n": 3
+    },
+    {
+      "dynamism": 0.4,
+      "strategy": "greedy_insertion",
+      "mean_distance": 1139.4750993826174,
+      "sd_distance": 25.454811265757048,
+      "se_distance": 14.69634213645595,
+      "n": 3
+    },
+    {
+      "dynamism": 0.4,
+      "strategy": "insertion_2opt_star",
+      "mean_distance": 1100.3687333518474,
+      "sd_distance": 45.18790348603678,
+      "se_distance": 26.089248241778165,
+      "n": 3
+    },
+    {
+      "dynamism": 0.4,
+      "strategy": "tabu_search",
+      "mean_distance": 2570.985253312068,
+      "sd_distance": 78.7024255884403,
+      "se_distance": 45.438866599362505,
+      "n": 3
+    },
+    {
+      "dynamism": 0.8,
+      "strategy": "greedy_insertion",
+      "mean_distance": 1160.6846795967442,
+      "sd_distance": 11.365658760337723,
+      "se_distance": 6.561966144798413,
+      "n": 3
+    },
+    {
+      "dynamism": 0.8,
+      "strategy": "insertion_2opt_star",
+      "mean_distance": 1123.5892890309858,
+      "sd_distance": 24.155746109136846,
+      "se_distance": 13.946326518586414,
+      "n": 3
+    },
+    {
+      "dynamism": 0.8,
+      "strategy": "tabu_search",
+      "mean_distance": 2358.1793277045344,
+      "sd_distance": 133.12768847635894,
+      "se_distance": 76.86130677841848,
+      "n": 3
     }
   ],
   "paired_stats": {
-    "error": "No module named 'engine'"
+    "friedman": {
+      "statistic": 16.222222222222214,
+      "p_value": 0.0003001851487690379
+    },
+    "pairwise": [
+      {
+        "compare": "greedy_insertion vs tabu_search",
+        "mean_diff": -1332.7512437484265,
+        "ci_95": [
+          -1415.7534453328192,
+          -1247.0066709199564
+        ],
+        "p_value": 0.00390625,
+        "significant_holm": true
+      },
+      {
+        "compare": "insertion_2opt_star vs tabu_search",
+        "mean_diff": -1377.9997158895067,
+        "ci_95": [
+          -1479.664511566485,
+          -1275.5136213993078
+        ],
+        "p_value": 0.00390625,
+        "significant_holm": true
+      },
+      {
+        "compare": "greedy_insertion vs insertion_2opt_star",
+        "mean_diff": 45.24847214108055,
+        "ci_95": [
+          23.042148738031866,
+          71.32045689335813
+        ],
+        "p_value": 0.0078125,
+        "significant_holm": true
+      }
+    ]
   }
 }

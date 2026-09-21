@@ -1,50 +1,50 @@
-{"time": 0.0, "event": "request_assigned", "request_id": 13, "evaluations": 1}
-{"time": 0.0, "event": "request_assigned", "request_id": 16, "evaluations": 2}
-{"time": 0.0, "event": "request_assigned", "request_id": 18, "evaluations": 3}
-{"time": 0.0, "event": "request_assigned", "request_id": 21, "evaluations": 6}
-{"time": 0.0, "event": "request_assigned", "request_id": 24, "evaluations": 7}
-{"time": 0.0, "event": "request_assigned", "request_id": 36, "evaluations": 8}
-{"time": 0.0, "event": "request_assigned", "request_id": 46, "evaluations": 9}
-{"time": 0.0, "event": "request_assigned", "request_id": 47, "evaluations": 10}
-{"time": 0.0, "event": "request_assigned", "request_id": 48, "evaluations": 11}
-{"time": 5.379883950261455, "event": "request_assigned", "request_id": 22, "evaluations": 12}
-{"time": 16.205189801390453, "event": "request_assigned", "request_id": 41, "evaluations": 13}
-{"time": 46.666757018936764, "event": "request_assigned", "request_id": 45, "evaluations": 14}
-{"time": 69.22650761640685, "event": "request_assigned", "request_id": 49, "evaluations": 15}
-{"time": 88.23858445994077, "event": "request_assigned", "request_id": 10, "evaluations": 16}
-{"time": 95.98299901199883, "event": "request_assigned", "request_id": 30, "evaluations": 17}
-{"time": 101.37490347599834, "event": "request_assigned", "request_id": 6, "evaluations": 18}
-{"time": 157.0399761771925, "event": "request_assigned", "request_id": 1, "evaluations": 19}
-{"time": 159.09311410081781, "event": "request_assigned", "request_id": 26, "evaluations": 20}
-{"time": 184.95405342890368, "event": "request_assigned", "request_id": 27, "evaluations": 21}
-{"time": 190.73155370455405, "event": "request_assigned", "request_id": 2, "evaluations": 22}
-{"time": 199.7140126535102, "event": "request_assigned", "request_id": 8, "evaluations": 23}
-{"time": 203.8346264091188, "event": "request_assigned", "request_id": 11, "evaluations": 24}
-{"time": 204.21987963105954, "event": "request_assigned", "request_id": 33, "evaluations": 25}
-{"time": 213.94290236855343, "event": "request_assigned", "request_id": 44, "evaluations": 26}
-{"time": 242.75623730868932, "event": "request_assigned", "request_id": 7, "evaluations": 27}
-{"time": 249.0987677300121, "event": "request_assigned", "request_id": 14, "evaluations": 28}
-{"time": 249.4211543515334, "event": "request_assigned", "request_id": 23, "evaluations": 29}
-{"time": 265.45059093545024, "event": "request_assigned", "request_id": 4, "evaluations": 30}
-{"time": 289.1778283130295, "event": "request_assigned", "request_id": 0, "evaluations": 31}
-{"time": 321.7898706383484, "event": "request_assigned", "request_id": 12, "evaluations": 34}
-{"time": 322.3786346563897, "event": "request_assigned", "request_id": 17, "evaluations": 35}
-{"time": 328.3371352759758, "event": "request_assigned", "request_id": 37, "evaluations": 36}
-{"time": 349.44991816305424, "event": "request_assigned", "request_id": 3, "evaluations": 37}
-{"time": 352.9758935134751, "event": "request_assigned", "request_id": 19, "evaluations": 38}
-{"time": 386.08347248161584, "event": "request_assigned", "request_id": 43, "evaluations": 39}
-{"time": 398.24581809276526, "event": "request_assigned", "request_id": 35, "evaluations": 40}
-{"time": 399.8261549761754, "event": "request_assigned", "request_id": 38, "evaluations": 41}
-{"time": 401.48254387930444, "event": "request_assigned", "request_id": 25, "evaluations": 42}
-{"time": 401.6611237326796, "event": "request_assigned", "request_id": 39, "evaluations": 43}
-{"time": 411.6905767911055, "event": "request_assigned", "request_id": 34, "evaluations": 44}
-{"time": 423.99144666023074, "event": "request_assigned", "request_id": 5, "evaluations": 45}
-{"time": 459.18618526061846, "event": "request_assigned", "request_id": 28, "evaluations": 46}
-{"time": 460.6981572992573, "event": "request_assigned", "request_id": 20, "evaluations": 47}
-{"time": 470.3511365730358, "event": "request_assigned", "request_id": 29, "evaluations": 48}
-{"time": 471.54647493972726, "event": "request_assigned", "request_id": 40, "evaluations": 49}
-{"time": 514.6129760624833, "event": "request_assigned", "request_id": 42, "evaluations": 50}
-{"time": 523.6590375797845, "event": "request_assigned", "request_id": 31, "evaluations": 51}
-{"time": 530.8289894912452, "event": "request_assigned", "request_id": 15, "evaluations": 52}
-{"time": 559.107253958517, "event": "request_assigned", "request_id": 9, "evaluations": 53}
-{"time": 578.8893297520959, "event": "request_assigned", "request_id": 32, "evaluations": 54}
+{"time": 0.0, "event": "request_assigned", "request_id": 13, "evaluations": 1, "response_time_ms": 1.3294999953359365}
+{"time": 0.0, "event": "request_assigned", "request_id": 16, "evaluations": 1, "response_time_ms": 0.07550000736955553}
+{"time": 0.0, "event": "request_assigned", "request_id": 18, "evaluations": 1, "response_time_ms": 0.09089999366551638}
+{"time": 0.0, "event": "request_assigned", "request_id": 21, "evaluations": 3, "response_time_ms": 0.3608999977586791}
+{"time": 0.0, "event": "request_assigned", "request_id": 24, "evaluations": 1, "response_time_ms": 0.16429999959655106}
+{"time": 0.0, "event": "request_assigned", "request_id": 36, "evaluations": 1, "response_time_ms": 0.2162000018870458}
+{"time": 0.0, "event": "request_assigned", "request_id": 46, "evaluations": 1, "response_time_ms": 0.490999998874031}
+{"time": 0.0, "event": "request_assigned", "request_id": 47, "evaluations": 1, "response_time_ms": 0.4450999986147508}
+{"time": 0.0, "event": "request_assigned", "request_id": 48, "evaluations": 1, "response_time_ms": 0.451600004453212}
+{"time": 5.379883950261455, "event": "request_assigned", "request_id": 22, "evaluations": 1, "response_time_ms": 0.5416000058175996}
+{"time": 16.205189801390453, "event": "request_assigned", "request_id": 41, "evaluations": 1, "response_time_ms": 0.6659000064246356}
+{"time": 46.666757018936764, "event": "request_assigned", "request_id": 45, "evaluations": 1, "response_time_ms": 0.7941000076243654}
+{"time": 69.22650761640685, "event": "request_assigned", "request_id": 49, "evaluations": 1, "response_time_ms": 0.9340999968117103}
+{"time": 88.23858445994077, "event": "request_assigned", "request_id": 10, "evaluations": 1, "response_time_ms": 1.0968999995384365}
+{"time": 95.98299901199883, "event": "request_assigned", "request_id": 30, "evaluations": 1, "response_time_ms": 1.2933999969391152}
+{"time": 101.37490347599834, "event": "request_assigned", "request_id": 6, "evaluations": 1, "response_time_ms": 1.5027000044938177}
+{"time": 157.0399761771925, "event": "request_assigned", "request_id": 1, "evaluations": 1, "response_time_ms": 2.7616000006673858}
+{"time": 159.09311410081781, "event": "request_assigned", "request_id": 26, "evaluations": 1, "response_time_ms": 4.222999996272847}
+{"time": 184.95405342890368, "event": "request_assigned", "request_id": 27, "evaluations": 1, "response_time_ms": 2.461399999447167}
+{"time": 190.73155370455405, "event": "request_assigned", "request_id": 2, "evaluations": 1, "response_time_ms": 2.5001000030897558}
+{"time": 199.7140126535102, "event": "request_assigned", "request_id": 8, "evaluations": 1, "response_time_ms": 2.782600000500679}
+{"time": 203.8346264091188, "event": "request_assigned", "request_id": 11, "evaluations": 1, "response_time_ms": 3.380399997695349}
+{"time": 204.21987963105954, "event": "request_assigned", "request_id": 33, "evaluations": 1, "response_time_ms": 6.436600000597537}
+{"time": 213.94290236855343, "event": "request_assigned", "request_id": 44, "evaluations": 1, "response_time_ms": 4.625899993698113}
+{"time": 242.75623730868932, "event": "request_assigned", "request_id": 7, "evaluations": 1, "response_time_ms": 4.374299998744391}
+{"time": 249.0987677300121, "event": "request_assigned", "request_id": 14, "evaluations": 1, "response_time_ms": 7.800099992891774}
+{"time": 249.4211543515334, "event": "request_assigned", "request_id": 23, "evaluations": 1, "response_time_ms": 5.280299999867566}
+{"time": 265.45059093545024, "event": "request_assigned", "request_id": 4, "evaluations": 1, "response_time_ms": 8.278299996163696}
+{"time": 289.1778283130295, "event": "request_assigned", "request_id": 0, "evaluations": 1, "response_time_ms": 6.621299995458685}
+{"time": 321.7898706383484, "event": "request_assigned", "request_id": 12, "evaluations": 3, "response_time_ms": 26.73800000047777}
+{"time": 322.3786346563897, "event": "request_assigned", "request_id": 17, "evaluations": 1, "response_time_ms": 7.856600001105107}
+{"time": 328.3371352759758, "event": "request_assigned", "request_id": 37, "evaluations": 1, "response_time_ms": 11.021700003766455}
+{"time": 349.44991816305424, "event": "request_assigned", "request_id": 3, "evaluations": 1, "response_time_ms": 8.818200003588572}
+{"time": 352.9758935134751, "event": "request_assigned", "request_id": 19, "evaluations": 1, "response_time_ms": 13.118400005623698}
+{"time": 386.08347248161584, "event": "request_assigned", "request_id": 43, "evaluations": 1, "response_time_ms": 13.896999997086823}
+{"time": 398.24581809276526, "event": "request_assigned", "request_id": 35, "evaluations": 1, "response_time_ms": 14.058999993721955}
+{"time": 399.8261549761754, "event": "request_assigned", "request_id": 38, "evaluations": 1, "response_time_ms": 14.070299992454238}
+{"time": 401.48254387930444, "event": "request_assigned", "request_id": 25, "evaluations": 1, "response_time_ms": 14.162699997541495}
+{"time": 401.6611237326796, "event": "request_assigned", "request_id": 39, "evaluations": 1, "response_time_ms": 14.996400001109578}
+{"time": 411.6905767911055, "event": "request_assigned", "request_id": 34, "evaluations": 1, "response_time_ms": 19.922300009056926}
+{"time": 423.99144666023074, "event": "request_assigned", "request_id": 5, "evaluations": 1, "response_time_ms": 19.570200005546212}
+{"time": 459.18618526061846, "event": "request_assigned", "request_id": 28, "evaluations": 1, "response_time_ms": 18.97590000589844}
+{"time": 460.6981572992573, "event": "request_assigned", "request_id": 20, "evaluations": 1, "response_time_ms": 21.39679998799693}
+{"time": 470.3511365730358, "event": "request_assigned", "request_id": 29, "evaluations": 1, "response_time_ms": 25.60059999814257}
+{"time": 471.54647493972726, "event": "request_assigned", "request_id": 40, "evaluations": 1, "response_time_ms": 23.46430000034161}
+{"time": 514.6129760624833, "event": "request_assigned", "request_id": 42, "evaluations": 1, "response_time_ms": 27.3964999942109}
+{"time": 523.6590375797845, "event": "request_assigned", "request_id": 31, "evaluations": 1, "response_time_ms": 25.901500004692934}
+{"time": 530.8289894912452, "event": "request_assigned", "request_id": 15, "evaluations": 1, "response_time_ms": 32.53219999896828}
+{"time": 559.107253958517, "event": "request_assigned", "request_id": 9, "evaluations": 1, "response_time_ms": 35.84019999834709}
+{"time": 578.8893297520959, "event": "request_assigned", "request_id": 32, "evaluations": 1, "response_time_ms": 31.99069999391213}
