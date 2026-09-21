@@ -23,17 +23,24 @@ def test_insertion_handcheck():
 def test_two_opt_star_handcheck_and_capacity_rejection():
     state=EngineState(scenario([(1.,1.),(5.,-1.),(1.,-1.),(5.,1.)])); state.vehicles[0].route=[0,1]; state.vehicles[1].route=[2,3]
     from engine.algorithms.two_opt_star import _cost
-    assert _cost(state,state.vehicles[0].route)+_cost(state,state.vehicles[1].route) == pytest.approx(21.970949, abs=1e-5)
+    assert _cost(state,state.vehicles[0].route)+_cost(state,state.vehicles[1].route) == pytest.approx(21.9707381, abs=1e-6)
     accepted, delta=two_opt_star_move(state,0,1,1,1)
     assert accepted and delta == pytest.approx(-0.94427191, abs=1e-6)
-    assert _cost(state,state.vehicles[0].route)+_cost(state,state.vehicles[1].route) == pytest.approx(21.026677, abs=1e-5)
+    assert _cost(state,state.vehicles[0].route)+_cost(state,state.vehicles[1].route) == pytest.approx(21.0264662, abs=1e-6)
     state=EngineState(scenario([(1.,1.),(5.,-1.),(1.,-1.),(5.,1.)],[2,2,2,2],3)); state.vehicles[0].route=[0,1]; state.vehicles[1].route=[2,3]
     assert two_opt_star_move(state,0,1,1,1)[0] is False
 
 def test_tabu_never_exceeds_budget():
-    state=EngineState(scenario([(float(i),0.) for i in range(5)])); state.advance_time(0)
-    sim=Simulator(state,TabuSearch(evaluation_budget=8)); sim.run()
-    assert sim.strategy.tabu_evaluations <= 8
+    state=EngineState(scenario([(float(i),0.) for i in range(5)])); state.vehicles[0].route=[0,1]; state.vehicles[1].route=[2,3]
+    tabu=TabuSearch(evaluation_budget=8); tabu.improve(state)
+    assert tabu.tabu_evaluations <= 8
+
+def test_tabu_repairs_crossing_routes():
+    state=EngineState(scenario([(1.,1.),(5.,-1.),(1.,-1.),(5.,1.)])); state.vehicles[0].route=[0,1]; state.vehicles[1].route=[2,3]
+    tabu=TabuSearch(evaluation_budget=500); tabu.improve(state)
+    from engine.algorithms.two_opt_star import _cost
+    assert _cost(state,state.vehicles[0].route)+_cost(state,state.vehicles[1].route) <= 21.0265
+    assert tabu.accepted_moves >= 1
 
 def test_same_seed_and_config_same_result():
     config={'scenario':{'customers':8,'vehicles':2,'capacity':20,'dynamism':.4,'map_size':10.,'horizon':20.}}
