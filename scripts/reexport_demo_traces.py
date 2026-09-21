@@ -20,5 +20,8 @@ for demo in data['demo_scenarios']:
     for name in ('greedy_insertion','insertion_2opt_star','tabu_search'):
         strategy={'greedy_insertion':GreedyInsertion,'insertion_2opt_star':GreedyThenTwoOptStar,'tabu_search':lambda:TabuSearch(evaluation_budget=500)}[name]()
         simulator=Simulator(EngineState(scenario),strategy); simulator.run(); traces[name]=simulator.trace
+    # Replay metadata only; no aggregate measurement is modified.
+    payload['demands']=demands
     demo['traces']=traces
 path.write_text(json.dumps(data,indent=2),encoding='utf8')
+(path.parent/'index.json').write_text(json.dumps({'scenarios':[{'id':index,'dynamism':demo['scenario']['dynamism']} for index,demo in enumerate(data['demo_scenarios'])]},indent=2),encoding='utf8')

@@ -1,0 +1,16 @@
+{
+  "scenarios": [
+    {
+      "id": 0,
+      "dynamism": 0.1
+    },
+    {
+      "id": 1,
+      "dynamism": 0.4
+    },
+    {
+      "id": 2,
+      "dynamism": 0.8
+    }
+  ]
+}
