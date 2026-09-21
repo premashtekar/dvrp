@@ -9,4 +9,5 @@ def test_compare_returns_three_runs_for_same_scenario():
     payload=response.json()
     assert payload['scenario_id']==scenario['id']
     assert len(payload['runs'])==3
+    assert {run['scenario_id'] for run in payload['runs']}=={scenario['id']}
     assert {run['status'] for run in payload['runs']}=={'finished'}

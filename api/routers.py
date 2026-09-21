@@ -37,7 +37,7 @@ class ScenarioCreate(BaseModel):
     customers:int=Field(gt=0); vehicles:int=Field(gt=0); capacity:int=Field(gt=0); dynamism:float=Field(ge=0,le=1); seed:int; map_size:float=Field(gt=0); horizon:float=Field(gt=0)
 class ScenarioResponse(BaseModel): id:str; created_at:str; params:dict[str,Any]; scenario:dict[str,Any]
 class RunCreate(BaseModel): scenario_id:str; strategy:str=Field(pattern='^(greedy_insertion|insertion_2opt_star|tabu_search)$'); budget:dict[str,Any]=Field(default_factory=dict)
-class RunResponse(BaseModel): run_id:str; status:str; metrics:dict[str,Any]|None=None
+class RunResponse(BaseModel): run_id:str; status:str; metrics:dict[str,Any]|None=None; scenario_id:str|None=None
 class CompareCreate(BaseModel):
     scenario_id:str
     strategies:list[str]=Field(default_factory=lambda:STRATEGIES.copy())
@@ -62,7 +62,7 @@ def run_engine(scenario, strategy_name:str,budget:dict[str,Any])->tuple[dict[str
 def persist_run(scenario_id:str,strategy:str,budget:dict[str,Any],scenario)->RunResponse:
     metrics,trace=run_engine(copy.deepcopy(scenario),strategy,budget); run_id=hashlib.sha256(f'{scenario_id}{strategy}{time.time_ns()}'.encode()).hexdigest()[:24]; trace_path=ROOT/'data'/'traces'/f'{run_id}.jsonl'; trace_path.parent.mkdir(parents=True,exist_ok=True); trace_path.write_text(''.join(json.dumps(event)+'\n' for event in trace),encoding='utf8')
     with get_conn() as conn: conn.execute('INSERT INTO runs VALUES (?,?,?,?,?,?,?,?,?,?,?)',(run_id,scenario_id,strategy,json.dumps(budget),'{}','0.1.0',1,'finished',json.dumps(metrics),str(trace_path),utcnow()))
-    return RunResponse(run_id=run_id,status='finished',metrics=metrics)
+    return RunResponse(run_id=run_id,status='finished',metrics=metrics,scenario_id=scenario_id)
 
 @router.get('/health',response_model=HealthResponse)
 def health_check(): ensure_database(); return HealthResponse(timestamp=utcnow())
@@ -94,9 +94,9 @@ def compare_scenario(request:CompareCreate):
     return {'scenario_id':request.scenario_id,'runs':[run.model_dump() for run in runs]}
 @router.get('/simulations/{run_id}',response_model=RunResponse)
 def get_simulation(run_id:str):
-    with get_conn() as conn: row=conn.execute('SELECT status,metrics_json FROM runs WHERE id=?',(run_id,)).fetchone()
+    with get_conn() as conn: row=conn.execute('SELECT status,metrics_json,scenario_id FROM runs WHERE id=?',(run_id,)).fetchone()
     if not row: raise HTTPException(404,'Run not found')
-    return RunResponse(run_id=run_id,status=row['status'],metrics=json.loads(row['metrics_json']))
+    return RunResponse(run_id=run_id,status=row['status'],metrics=json.loads(row['metrics_json']),scenario_id=row['scenario_id'])
 @router.get('/traces/{trace_id}')
 def get_trace(trace_id:str):
     with get_conn() as conn: row=conn.execute('SELECT trace_path FROM runs WHERE id=?',(trace_id,)).fetchone()
