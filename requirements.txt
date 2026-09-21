@@ -1,7 +1,8 @@
-numpy
-scipy
-fastapi
-uvicorn
-pydantic
-pytest
-httpx
+numpy==2.3.5
+scipy==1.18.1
+fastapi==0.141.1
+uvicorn==0.53.0
+pydantic==2.13.5
+PyYAML==6.0.3
+pytest==9.1.1
+httpx==0.28.1

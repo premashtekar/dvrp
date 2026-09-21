@@ -21,3 +21,7 @@ Demand is synthetic on a Euclidean plane; planning is instantaneous in simulatio
 ## Vercel
 
 Set Root Directory to `web`, select Vite, and leave environment variables empty. `web/vercel.json` rewrites every route to `index.html`.
+
+## Hosting
+
+Deploy the API with Render using `render.yaml`; it installs `requirements.txt` and starts `uvicorn api.main:app --host 0.0.0.0 --port $PORT`. Set `ALLOWED_ORIGINS` to the deployed frontend origin or use the local-development default `*`. Deploy the frontend to Vercel with Root Directory `web`, framework Vite, and `VITE_API_URL` set to the Render service base URL. If the API is sleeping or unavailable, the frontend displays its committed real-run export and retries the API health check.

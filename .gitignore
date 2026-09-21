@@ -3,6 +3,8 @@
 node_modules/
 .venv/
 data/*.db
+!data/seed/
+!data/seed/*.db
 data/*.log
 data/*.err
 dist/

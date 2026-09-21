@@ -1,318 +1,129 @@
-"""API routers for DVRP Lab.
-Implements endpoints defined in Phase P4 plan.
-"""
-
-from fastapi import APIRouter, HTTPException, BackgroundTasks
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
-import json
-import hashlib
-import time
-import os
-from datetime import datetime
-import sqlite3
-
-from engine.scenarios import generate_scenario, Scenario
-from engine.state import EngineState
-from engine.algorithms.greedy_insertion import GreedyInsertion
-from engine.algorithms.tabu_search import TabuSearch
+"""Deployable API routes backed by a request-scoped SQLite connection."""
+from __future__ import annotations
+import hashlib,json,os,shutil,sqlite3,time
+from datetime import datetime,timezone
+from pathlib import Path
+from typing import Any
+import numpy as np
+from fastapi import APIRouter,HTTPException,Response
+from pydantic import BaseModel,Field
+from scipy.stats import friedmanchisquare,wilcoxon
+from engine.scenarios import generate_scenario
+from engine.state import EngineState,RequestState
 from engine.simulator import Simulator
-from engine.models import Vehicle, Request
 from engine.distance import build_matrix
+from engine.algorithms.greedy_insertion import GreedyInsertion
+from engine.algorithms.greedy_then_two_opt_star import GreedyThenTwoOptStar
+from engine.algorithms.tabu_search import TabuSearch
 
-router = APIRouter()
+router=APIRouter()
+ROOT=Path(__file__).resolve().parents[1]; DB_PATH=ROOT/'data'/'dvrp.db'; SEED_PATH=ROOT/'data'/'seed'/'dvrp_seed.db'; DEMO_PATH=ROOT/'web'/'public'/'demo'/'results.json'
+METRICS=['total_distance','mean_response_time_ms','route_disruption','compute_time_s','evaluations','customers_served','customers_unserved','pending_pool_size','feasibility_violations','accepted_moves','improving_moves_found','tabu_evaluations']; STRATEGIES=['greedy_insertion','insertion_2opt_star','tabu_search']
 
-# SQLite helper
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "dvrp.db")
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+def ensure_database()->None:
+    DB_PATH.parent.mkdir(parents=True,exist_ok=True)
+    if (not DB_PATH.exists() or DB_PATH.stat().st_size==0) and SEED_PATH.exists(): shutil.copy2(SEED_PATH,DB_PATH)
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.executescript('''CREATE TABLE IF NOT EXISTS scenarios (id TEXT PRIMARY KEY,created_at TEXT,seed INTEGER,params_json TEXT,scenario_json TEXT);
+        CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY,scenario_id TEXT,strategy TEXT,budget_json TEXT,params_json TEXT,code_version TEXT,workers INTEGER,status TEXT,metrics_json TEXT,trace_path TEXT,created_at TEXT);
+        CREATE TABLE IF NOT EXISTS experiment_runs (id TEXT PRIMARY KEY,experiment_id TEXT,run_id TEXT,strategy TEXT,params_json TEXT,metrics_json TEXT,created_at TEXT);''')
 
-def get_conn():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+def get_conn()->sqlite3.Connection:
+    ensure_database(); conn=sqlite3.connect(DB_PATH,check_same_thread=False); conn.row_factory=sqlite3.Row; return conn
 
-# Ensure tables exist
-with get_conn() as conn:
-    c = conn.cursor()
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS scenarios (
-            id TEXT PRIMARY KEY,
-            created_at TEXT,
-            seed INTEGER,
-            params_json TEXT,
-            scenario_json TEXT
-        )
-    """)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS runs (
-            id TEXT PRIMARY KEY,
-            scenario_id TEXT,
-            strategy TEXT,
-            budget_json TEXT,
-            params_json TEXT,
-            code_version TEXT,
-            workers INTEGER,
-            status TEXT,
-            metrics_json TEXT,
-            trace_path TEXT,
-            created_at TEXT,
-            FOREIGN KEY(scenario_id) REFERENCES scenarios(id)
-        )
-    """)
-    conn.commit()
-    # experiment tables
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS experiments (
-            id TEXT PRIMARY KEY,
-            config_json TEXT,
-            aggregated_json TEXT,
-            created_at TEXT
-        )
-    """)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS experiment_runs (
-            id TEXT PRIMARY KEY,
-            experiment_id TEXT,
-            run_id TEXT,
-            strategy TEXT,
-            params_json TEXT,
-            metrics_json TEXT,
-            created_at TEXT,
-            FOREIGN KEY(run_id) REFERENCES runs(id)
-        )
-    """)
-    conn.commit()
-
-# Pydantic models
-class HealthResponse(BaseModel):
-    status: str = "OK"
-    timestamp: str
-
-class StrategyInfo(BaseModel):
-    name: str
-    implemented: bool
-
+class HealthResponse(BaseModel): status:str='OK'; timestamp:str
+class StrategyInfo(BaseModel): name:str; implemented:bool
 class ScenarioCreate(BaseModel):
-    customers: int = Field(..., gt=0)
-    vehicles: int = Field(..., gt=0)
-    capacity: int = Field(..., gt=0)
-    dynamism: float = Field(..., ge=0.0, le=1.0)
-    seed: int
-    map_size: float = Field(..., gt=0)
-    horizon: float = Field(..., gt=0)
+    customers:int=Field(gt=0); vehicles:int=Field(gt=0); capacity:int=Field(gt=0); dynamism:float=Field(ge=0,le=1); seed:int; map_size:float=Field(gt=0); horizon:float=Field(gt=0)
+class ScenarioResponse(BaseModel): id:str; created_at:str; params:dict[str,Any]; scenario:dict[str,Any]
+class RunCreate(BaseModel): scenario_id:str; strategy:str=Field(pattern='^(greedy_insertion|insertion_2opt_star|tabu_search)$'); budget:dict[str,Any]=Field(default_factory=dict)
+class RunResponse(BaseModel): run_id:str; status:str; metrics:dict[str,Any]|None=None
 
-class ScenarioResponse(BaseModel):
-    id: str
-    created_at: str
-    params: Dict[str, Any]
-    scenario: Dict[str, Any]
+def utcnow()->str:return datetime.now(timezone.utc).isoformat()
+def scenario_hash(params:dict[str,Any])->str:return hashlib.sha256(json.dumps(params,sort_keys=True).encode()).hexdigest()[:24]
+def choose_strategy(name:str,budget:dict[str,Any]):
+    if name=='greedy_insertion': return GreedyInsertion()
+    if name=='insertion_2opt_star': return GreedyThenTwoOptStar()
+    if name=='tabu_search': return TabuSearch(evaluation_budget=budget.get('max_evaluations',500),tenure=budget.get('tenure',7))
+    raise ValueError(f'Unknown strategy: {name}')
+def total_distance(state:EngineState)->float:
+    matrix=build_matrix([(0.,0.)]+state.scenario.customer_locations); total=0.
+    for vehicle in state.vehicles.values():
+        route=[0]+[r+1 for r in vehicle.route]+[0]; total+=sum(matrix[a][b] for a,b in zip(route,route[1:]))
+    return total
+def run_engine(scenario, strategy_name:str,budget:dict[str,Any])->tuple[dict[str,Any],list[dict[str,Any]]]:
+    state=EngineState(scenario); strategy=choose_strategy(strategy_name,budget); simulator=Simulator(state,strategy); started=time.perf_counter(); final=simulator.run(); elapsed=time.perf_counter()-started
+    metrics={'total_distance':total_distance(final),'mean_response_time_ms':float(np.mean(simulator.response_times)) if simulator.response_times else 0.,'max_response_time_ms':max(simulator.response_times,default=0.),'route_disruption':simulator.route_disruption,'evaluations':simulator.total_evaluations,'tabu_evaluations':getattr(strategy,'tabu_evaluations',0),'improving_moves_found':getattr(strategy,'improving_moves_found',0),'accepted_moves':strategy.accepted_moves,'rejected_moves':strategy.rejected_moves,'iterations':strategy.iterations,'customers_served':sum(s==RequestState.ASSIGNED for s in final.request_states.values()),'customers_unserved':sum(s!=RequestState.ASSIGNED for s in final.request_states.values()),'pending_pool_size':sum(s==RequestState.AVAILABLE for s in final.request_states.values()),'feasibility_violations':sum(sum(final.requests[r].demand for r in v.route)>v.capacity for v in final.vehicles.values()),'phase_timings_ms':simulator.phase_timings_ms,'compute_time_s':elapsed,'total_time_s':elapsed}
+    return metrics,simulator.trace
 
-class RunCreate(BaseModel):
-    scenario_id: str
-    strategy: str = Field(..., pattern="^(greedy_insertion|insertion_2opt_star|tabu_search)$")
-    budget: Dict[str, Any] = {}
+@router.get('/health',response_model=HealthResponse)
+def health_check(): ensure_database(); return HealthResponse(timestamp=utcnow())
+@router.get('/strategies',response_model=list[StrategyInfo])
+def list_strategies(): return [StrategyInfo(name=name,implemented=True) for name in STRATEGIES]
+@router.post('/scenarios',response_model=ScenarioResponse)
+def create_scenario(request:ScenarioCreate):
+    params=request.model_dump(); scenario_id=scenario_hash(params); created=utcnow(); scenario=generate_scenario({'scenario':{k:params[k] for k in ('customers','vehicles','capacity','dynamism','map_size','horizon')}},params['seed'])
+    with get_conn() as conn: conn.execute('INSERT OR REPLACE INTO scenarios VALUES (?,?,?,?,?)',(scenario_id,created,params['seed'],json.dumps(params),json.dumps(scenario.__dict__)))
+    return ScenarioResponse(id=scenario_id,created_at=created,params=params,scenario=scenario.__dict__)
+@router.get('/scenarios/{scenario_id}',response_model=ScenarioResponse)
+def get_scenario(scenario_id:str):
+    with get_conn() as conn: row=conn.execute('SELECT * FROM scenarios WHERE id=?',(scenario_id,)).fetchone()
+    if not row: raise HTTPException(404,'Scenario not found')
+    return ScenarioResponse(id=row['id'],created_at=row['created_at'],params=json.loads(row['params_json']),scenario=json.loads(row['scenario_json']))
+@router.post('/simulations',response_model=RunResponse)
+def start_simulation(request:RunCreate):
+    with get_conn() as conn: row=conn.execute('SELECT scenario_json FROM scenarios WHERE id=?',(request.scenario_id,)).fetchone()
+    if not row: raise HTTPException(404,'Scenario not found')
+    from engine.models import Scenario
+    metrics,trace=run_engine(Scenario(**json.loads(row['scenario_json'])),request.strategy,request.budget); run_id=hashlib.sha256(f'{request.scenario_id}{request.strategy}{time.time_ns()}'.encode()).hexdigest()[:24]; trace_path=ROOT/'data'/'traces'/f'{run_id}.jsonl'; trace_path.parent.mkdir(parents=True,exist_ok=True); trace_path.write_text(''.join(json.dumps(event)+'\n' for event in trace),encoding='utf8')
+    with get_conn() as conn: conn.execute('INSERT INTO runs VALUES (?,?,?,?,?,?,?,?,?,?,?)',(run_id,request.scenario_id,request.strategy,json.dumps(request.budget),'{}','0.1.0',1,'finished',json.dumps(metrics),str(trace_path),utcnow()))
+    return RunResponse(run_id=run_id,status='finished',metrics=metrics)
+@router.get('/simulations/{run_id}',response_model=RunResponse)
+def get_simulation(run_id:str):
+    with get_conn() as conn: row=conn.execute('SELECT status,metrics_json FROM runs WHERE id=?',(run_id,)).fetchone()
+    if not row: raise HTTPException(404,'Run not found')
+    return RunResponse(run_id=run_id,status=row['status'],metrics=json.loads(row['metrics_json']))
+@router.get('/traces/{trace_id}')
+def get_trace(trace_id:str):
+    with get_conn() as conn: row=conn.execute('SELECT trace_path FROM runs WHERE id=?',(trace_id,)).fetchone()
+    if not row or not Path(row['trace_path']).exists(): raise HTTPException(404,'Trace not found')
+    return {'id':trace_id,'events':[json.loads(x) for x in Path(row['trace_path']).read_text(encoding='utf8').splitlines() if x]}
+@router.get('/simulations/{run_id}/trace')
+def get_simulation_trace(run_id:str):
+    with get_conn() as conn: row=conn.execute('SELECT trace_path FROM runs WHERE id=?',(run_id,)).fetchone()
+    if not row or not Path(row['trace_path']).exists(): raise HTTPException(404,'Trace not found')
+    return Response(Path(row['trace_path']).read_text(encoding='utf8'),media_type='application/x-ndjson')
 
-class RunResponse(BaseModel):
-    run_id: str
-    status: str
-    metrics: Optional[Dict[str, Any]] = None
-
-class TraceEvent(BaseModel):
-    time: float
-    event: str
-    request_id: Optional[int] = None
-    evaluations: Optional[int] = None
-    delta: Optional[float] = None
-
-# Endpoints
-@router.get("/health", response_model=HealthResponse)
-async def health_check():
-    return HealthResponse(timestamp=datetime.utcnow().isoformat())
-
-@router.get("/strategies", response_model=List[StrategyInfo])
-async def list_strategies():
-    return [
-        StrategyInfo(name="greedy_insertion", implemented=True),
-        StrategyInfo(name="insertion_2opt_star", implemented=True),
-        StrategyInfo(name="tabu_search", implemented=True),
-    ]
-
-def compute_hash(params: Dict[str, Any]) -> str:
-    # deterministic hash of sorted JSON
-    json_str = json.dumps(params, sort_keys=True)
-    return hashlib.sha256(json_str.encode()).hexdigest()
-
-@router.post("/scenarios", response_model=ScenarioResponse)
-async def create_scenario(scen: ScenarioCreate):
-    params = scen.dict()
-    scen_id = compute_hash(params)
-    created = datetime.utcnow().isoformat()
-    # generate scenario object
-    # generate scenario object using proper signature
-    config = {
-        "scenario": {
-            "customers": scen.customers,
-            "vehicles": scen.vehicles,
-            "capacity": scen.capacity,
-            "dynamism": scen.dynamism,
-            "map_size": scen.map_size,
-            "horizon": scen.horizon,
-        }
-    }
-    scenario_obj = generate_scenario(config, scen.seed)
-    # store JSON representations
-    with get_conn() as conn:
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT OR REPLACE INTO scenarios (id, created_at, seed, params_json, scenario_json) VALUES (?,?,?,?,?)",
-            (scen_id, created, scen.seed, json.dumps(params), json.dumps(scenario_obj.__dict__)),
-        )
-        conn.commit()
-    return ScenarioResponse(id=scen_id, created_at=created, params=params, scenario=scenario_obj.__dict__)
-
-@router.get("/scenarios/{scenario_id}", response_model=ScenarioResponse)
-async def get_scenario(scenario_id: str):
-    with get_conn() as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM scenarios WHERE id=?", (scenario_id,))
-        row = cur.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Scenario not found")
-    params = json.loads(row["params_json"])
-    scenario = json.loads(row["scenario_json"])
-    return ScenarioResponse(id=row["id"], created_at=row["created_at"], params=params, scenario=scenario)
-
-def run_simulation(state: EngineState, strategy_name: str) -> Dict[str, Any]:
-    # Choose strategy implementation
-    if strategy_name == "greedy_insertion":
-        strat = GreedyInsertion()
-    elif strategy_name == "insertion_2opt_star":
-        # compose greedy then 2-opt*
-        class StrategyB(GreedyInsertion.__class__):
-            pass
-        # We'll reuse GreedyInsertion then apply two_opt_star
-        strat = GreedyInsertion()
-    else:
-        raise ValueError("Unsupported strategy")
-    sim = Simulator(state, strat)
-    start = time.perf_counter()
-    sim.run()
-    if strategy_name == "insertion_2opt_star":
-        # after greedy insertion, improve
-        evals, delta = apply_two_opt_star(state)
-    else:
-        evals, delta = 0, 0.0
-    end = time.perf_counter()
-    metrics = {
-        "total_time_s": end - start,
-        "evaluations": getattr(strat, "evaluations", 0) + evals,
-        "delta_distance": delta,
-    }
-    return metrics
-
-@router.post("/simulations", response_model=RunResponse)
-async def start_simulation(run: RunCreate, background: BackgroundTasks):
-    # fetch scenario
-    with get_conn() as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT scenario_json FROM scenarios WHERE id=?", (run.scenario_id,))
-        row = cur.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Scenario not found")
-    scenario_dict = json.loads(row["scenario_json"])
-    # reconstruct Scenario dataclass (simplified)
-    # Scenario class already imported from engine.scenarios at module level
-    scenario = Scenario(**scenario_dict)
-    state = EngineState(scenario)
-    run_id = hashlib.sha256((run.scenario_id + run.strategy + str(time.time())).encode()).hexdigest()[:16]
-    created = datetime.utcnow().isoformat()
-    # paths
-    trace_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "traces", f"{run_id}.jsonl"))
-    os.makedirs(os.path.dirname(trace_path), exist_ok=True)
-    # background execution
-    def exec_run():
-        # select strategy implementation
-        if run.strategy == "greedy_insertion":
-            strat = GreedyInsertion()
-        elif run.strategy == "insertion_2opt_star":
-            strat = GreedyInsertion()
-        elif run.strategy == "tabu_search":
-            strat = TabuSearch()
-        else:
-            raise ValueError("Unsupported strategy")
-        sim = Simulator(state, strat)
-        start = time.perf_counter()
-        sim.run()
-        if run.strategy == "insertion_2opt_star":
-            evals, delta = apply_two_opt_star(state)
-            metrics = {
-                "total_time_s": time.perf_counter() - start,
-                "evaluations": getattr(strat, "evaluations", 0) + evals,
-                "delta_distance": delta,
-            }
-        else:
-            metrics = {
-                "total_time_s": time.perf_counter() - start,
-                "evaluations": getattr(strat, "evaluations", 0),
-                "delta_distance": 0.0,
-            }
-        # write trace
-        with open(trace_path, "w", encoding="utf-8") as f:
-            for ev in sim.trace:
-                f.write(json.dumps(ev) + "\n")
-        # store run record
-        with get_conn() as conn2:
-            cur2 = conn2.cursor()
-            cur2.execute(
-                "INSERT INTO runs (id, scenario_id, strategy, budget_json, params_json, code_version, workers, status, metrics_json, trace_path, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    run_id,
-                    run.scenario_id,
-                    run.strategy,
-                    json.dumps(run.budget),
-                    json.dumps({}),
-                    "0.1.0",
-                    1,
-                    "finished",
-                    json.dumps(metrics),
-                    trace_path,
-                    created,
-                ),
-            )
-            conn2.commit()
-    background.add_task(exec_run)
-    return RunResponse(run_id=run_id, status="running")
-
-@router.get("/simulations/{run_id}", response_model=RunResponse)
-async def get_simulation(run_id: str):
-    with get_conn() as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM runs WHERE id=?", (run_id,))
-        row = cur.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Run not found")
-    metrics = json.loads(row["metrics_json"]) if row["metrics_json"] else None
-    return RunResponse(run_id=row["id"], status=row["status"], metrics=metrics)
-
-@router.get("/simulations/{run_id}/trace")
-async def get_trace(run_id: str):
-    with get_conn() as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT trace_path FROM runs WHERE id=?", (run_id,))
-        row = cur.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Run not found")
-    path = row["trace_path"]
-    if not os.path.exists(path):
-        raise HTTPException(status_code=404, detail="Trace not available")
-    with open(path, "r", encoding="utf-8") as f:
-        content = f.read()
-    return content  # raw JSONL string
-
-@router.get("/runs")
-async def list_runs(limit: int = 10, offset: int = 0):
-    with get_conn() as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT id, scenario_id, strategy, status, created_at FROM runs ORDER BY created_at DESC LIMIT ? OFFSET ?", (limit, offset))
-        rows = cur.fetchall()
-    return [dict(row) for row in rows]
+def descriptive(values:list[float])->dict[str,Any]:
+    sample=np.asarray(values,dtype=float); n=len(sample); sd=float(np.std(sample,ddof=1)) if n>1 else 0.; se=sd/(n**.5) if n else 0.; mean=float(np.mean(sample)) if n else 0.
+    return {'mean':mean,'sd':sd,'se':se,'ci95':[mean-1.96*se,mean+1.96*se],'n':n}
+def bootstrap(values:list[float])->list[float]:
+    sample=np.asarray(values,dtype=float); rng=np.random.default_rng(0); means=[float(sample[rng.integers(0,len(sample),len(sample))].mean()) for _ in range(2000)]
+    return [float(np.quantile(means,.025)),float(np.quantile(means,.975))]
+def demo_scenarios()->list[Any]:
+    if not DEMO_PATH.exists(): return []
+    return json.loads(DEMO_PATH.read_text(encoding='utf8')).get('demo_scenarios',[])
+@router.get('/demo-scenarios')
+def get_demo_scenarios(): return {'demo_scenarios':demo_scenarios()}
+@router.get('/results')
+def results(batch:str='final'):
+    with get_conn() as conn: rows=conn.execute('SELECT strategy,params_json,metrics_json FROM experiment_runs WHERE experiment_id=?',(batch,)).fetchall()
+    grouped:dict[tuple[int,float,int],dict[str,dict[str,Any]]]={}
+    for row in rows:
+        params=json.loads(row['params_json']); key=(params['scenario']['customers'],params['scenario']['dynamism'],params['seed']); grouped.setdefault(key,{})[row['strategy']]=json.loads(row['metrics_json'])
+    complete={key:value for key,value in grouped.items() if set(value)==set(STRATEGIES)}
+    cells:dict[tuple[int,float],list[tuple[int,dict[str,dict[str,Any]]]]]={}
+    for (customers,dynamism,seed),triple in complete.items(): cells.setdefault((customers,dynamism),[]).append((seed,triple))
+    aggregates=[]; paired=[]
+    for (customers,dynamism),triples in sorted(cells.items()):
+        for strategy in STRATEGIES: aggregates.append({'customers':customers,'dynamism':dynamism,'strategy':strategy,'metrics':{metric:descriptive([triple[strategy].get(metric,0.) for _,triple in triples]) for metric in METRICS}})
+        samples=[[triple[strategy]['total_distance'] for _,triple in triples] for strategy in STRATEGIES]
+        try: fstat,fp=friedmanchisquare(*samples)
+        except ValueError: fstat,fp=0.,1.
+        comparisons=[]
+        for left,right in ((0,1),(0,2),(1,2)):
+            difference=np.asarray(samples[left])-np.asarray(samples[right]); zero=not np.any(difference); stat,p=(0.,1.) if zero else wilcoxon(difference,zero_method='pratt'); comparisons.append({'comparison':f'{STRATEGIES[left]}-{STRATEGIES[right]}','mean_difference':float(difference.mean()),'bootstrap_ci95':bootstrap(difference.tolist()),'effect_size':float(difference.mean()/difference.std(ddof=1)) if len(difference)>1 and difference.std(ddof=1)>0 else 0.,'wilcoxon_statistic':float(stat),'wilcoxon_p':float(p),'note':'no difference: all paired differences are 0' if zero else None})
+        ordered=sorted(comparisons,key=lambda value:value['wilcoxon_p']); count=len(ordered)
+        for rank,value in enumerate(ordered): value['holm_p']=min(1.,value['wilcoxon_p']*(count-rank)); value['holm_reject']=value['holm_p']<.05
+        paired.append({'customers':customers,'dynamism':dynamism,'n':len(triples),'friedman':{'statistic':float(fstat),'p_value':float(fp)},'comparisons':comparisons})
+    return {'generated_at':utcnow(),'source_experiment':batch,'note':'Small n: treat as descriptive if n < 10.','config':{'customers':sorted({k[0] for k in complete}),'dynamism':sorted({k[1] for k in complete}),'strategies':STRATEGIES,'seeds':sorted({k[2] for k in complete})},'aggregated':aggregates,'paired_comparisons':paired,'demo_scenarios':demo_scenarios()}
