@@ -6,7 +6,7 @@ from ..distance import build_matrix
 
 class TabuSearch(GreedyInsertion):
     def __init__(self, tenure: int = 7, evaluation_budget: int = 500):
-        super().__init__(); self.tenure = tenure; self.evaluation_budget = evaluation_budget; self.tabu = deque(maxlen=tenure)
+        super().__init__(); self.tenure = tenure; self.tabu_budget = evaluation_budget; self.tabu_evaluations = 0; self.evaluation_budget = None; self.tabu = deque(maxlen=tenure)
     def _cost(self, state, route):
         matrix = getattr(state, "_distance_matrix", None)
         if matrix is None:
@@ -15,7 +15,7 @@ class TabuSearch(GreedyInsertion):
         return sum(matrix[a][b] for a, b in zip(nodes, nodes[1:]))
     def update(self, state, request):
         before = self.evaluations; _, state = super().update(state, request)
-        while self.evaluations < self.evaluation_budget:
+        while self.tabu_evaluations < self.tabu_budget:
             best = None
             for a in sorted(state.vehicles):
                 for rid in list(state.vehicles[a].route):
@@ -24,13 +24,13 @@ class TabuSearch(GreedyInsertion):
                         ra, rb = state.vehicles[a].route, state.vehicles[b].route
                         if sum(state.requests[x].demand for x in rb) + state.requests[rid].demand > state.vehicles[b].capacity: continue
                         for pos in range(len(rb) + 1):
-                            if self.evaluations >= self.evaluation_budget: break
-                            self.evaluations += 1; na=[x for x in ra if x != rid]; nb=rb.copy(); nb.insert(pos,rid)
+                            if self.tabu_evaluations >= self.tabu_budget: break
+                            self.evaluations += 1; self.tabu_evaluations += 1; na=[x for x in ra if x != rid]; nb=rb.copy(); nb.insert(pos,rid)
                             delta=self._cost(state,na)+self._cost(state,nb)-self._cost(state,ra)-self._cost(state,rb); move=(delta,rid,a,b,na,nb)
                             if ((rid,b) not in self.tabu or delta < -1e-12) and (best is None or move < best): best=move
-                        if self.evaluations >= self.evaluation_budget: break
-                    if self.evaluations >= self.evaluation_budget: break
-                if self.evaluations >= self.evaluation_budget: break
+                        if self.tabu_evaluations >= self.tabu_budget: break
+                    if self.tabu_evaluations >= self.tabu_budget: break
+                if self.tabu_evaluations >= self.tabu_budget: break
             if best is None or best[0] >= -1e-12: self.rejected_moves += 1; break
             _,rid,a,b,na,nb=best; state.vehicles[a].route,state.vehicles[b].route=na,nb; self.tabu.append((rid,b)); self.accepted_moves += 1; self.iterations += 1
         return self.evaluations-before, state

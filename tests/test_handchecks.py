@@ -33,7 +33,7 @@ def test_two_opt_star_handcheck_and_capacity_rejection():
 def test_tabu_never_exceeds_budget():
     state=EngineState(scenario([(float(i),0.) for i in range(5)])); state.advance_time(0)
     sim=Simulator(state,TabuSearch(evaluation_budget=8)); sim.run()
-    assert sim.total_evaluations <= 8
+    assert sim.strategy.tabu_evaluations <= 8
 
 def test_same_seed_and_config_same_result():
     config={'scenario':{'customers':8,'vehicles':2,'capacity':20,'dynamism':.4,'map_size':10.,'horizon':20.}}
