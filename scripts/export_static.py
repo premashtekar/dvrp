@@ -1,116 +1,56 @@
-import sqlite3
-import json
-import os
-from datetime import datetime, timezone
-from pathlib import Path
+"""Export final-only database results for the static web application."""
+from __future__ import annotations
+import csv,json,sqlite3
 from collections import defaultdict
-import csv
+from datetime import datetime,timezone
+from pathlib import Path
+import numpy as np
+from scipy.stats import friedmanchisquare,wilcoxon
+from engine.experiment_runner import DB_PATH,strategy_factory
+from engine.scenarios import generate_scenario
+from engine.state import EngineState
+from engine.simulator import Simulator
 
-from engine.stats import mean, std, sem, friedman, wilcoxon_pairwise, bootstrap_ci
-
-# Paths
-DB_PATH = Path('data/dvrp.db')
-OUTPUT_JSON = Path('web/public/demo/results.json')
-CSV_PATH = Path('web/public/demo/aggregated.csv')
-
-# Load experiment runs
-conn = sqlite3.connect(DB_PATH)
-cur = conn.cursor()
-cur.execute("SELECT run_id, strategy, metrics_json, params_json FROM experiment_runs WHERE experiment_id='pilot_v3'")
-rows = cur.fetchall()
-conn.close()
-
-groups = {}
-for run_id, strategy, metrics_json, params_json in rows:
-    metrics = json.loads(metrics_json)
-    params = json.loads(params_json)
-    sig = (params['scenario']['customers'], params['scenario']['dynamism'], params['seed'])
-    if sig not in groups:
-        groups[sig] = {}
-    groups[sig][strategy] = {
-        'run_id': run_id,
-        'strategy': strategy,
-        'metrics': metrics
-    }
-
-per_run = []
-strategies_expected = ['greedy_insertion', 'insertion_2opt_star', 'tabu_search']
-for sig, strats in groups.items():
-    if set(strats.keys()) == set(strategies_expected):
-        for s in strats.values():
-            s['dynamism'] = sig[1]
-            per_run.append(s)
-
-agg_by_dyn_strat = defaultdict(list)
-distance_pooled = {s: [] for s in strategies_expected}
-for entry in per_run:
-    strat = entry['strategy']
-    dyn = entry['dynamism']
-    d = entry['metrics'].get('total_distance', 0)
-    agg_by_dyn_strat[(dyn, strat)].append(d)
-    
-# for paired stats, we must align the same instances
-aligned_distances = []
-for sig, strats in groups.items():
-    if set(strats.keys()) == set(strategies_expected):
-        aligned_distances.append([strats[s]['metrics'].get('total_distance', 0) for s in strategies_expected])
-
-# paired tests
-friedman_stat, friedman_p = friedman(list(zip(*aligned_distances))) if aligned_distances else (0.0, 1.0)
-wilcoxon_results = wilcoxon_pairwise(list(zip(*aligned_distances))) if aligned_distances else []
-
-paired_diffs = []
-if aligned_distances:
-    for (i, j, stat, p, reject) in wilcoxon_results:
-        diffs = [row[i] - row[j] for row in aligned_distances]
-        m_diff = mean(diffs)
-        ci_lower, ci_upper = bootstrap_ci(diffs)
-        paired_diffs.append({
-            'compare': f"{strategies_expected[i]} vs {strategies_expected[j]}",
-            'mean_diff': m_diff,
-            'ci_95': [ci_lower, ci_upper],
-            'p_value': p,
-            'significant_holm': reject
-        })
-
-aggregated = []
-for (dyn, strat), dists in agg_by_dyn_strat.items():
-    aggregated.append({
-        'dynamism': dyn,
-        'strategy': strat,
-        'mean_distance': mean(dists),
-        'sd_distance': std(dists) if len(dists)>1 else 0,
-        'se_distance': sem(dists),
-        'n': len(dists)
-    })
-
-# Gather all data for JSON
-result = {
-    'generated_at': datetime.now(timezone.utc).isoformat(),
-    'seed_count': 3,
-    'config': {
-        'customers': [50],
-        'dynamism': [0.1, 0.4, 0.8],
-        'strategies': strategies_expected,
-        'seeds': [1, 2, 3]
-    },
-    'per_run': per_run,
-    'aggregated': aggregated,
-    'paired_stats': {
-        'friedman': {'statistic': friedman_stat, 'p_value': friedman_p},
-        'pairwise': paired_diffs
-    }
-}
-
-OUTPUT_JSON.parent.mkdir(parents=True, exist_ok=True)
-with OUTPUT_JSON.open('w') as f:
-    json.dump(result, f, indent=2)
-
-# Write CSV
-with CSV_PATH.open('w', newline='') as f:
-    writer = csv.DictWriter(f, fieldnames=['dynamism', 'strategy', 'mean_distance', 'sd_distance', 'se_distance', 'n'])
-    writer.writeheader()
-    for row in aggregated:
-        writer.writerow(row)
-        
-print('Exported', OUTPUT_JSON, 'with', len(per_run), 'rows.')
+OUT=Path('web/public/demo'); STRATS=['greedy_insertion','insertion_2opt_star','tabu_search']; METRICS=['total_distance','mean_response_time_ms','route_disruption','compute_time_s','evaluations']
+def summary(xs):
+    a=np.array(xs,dtype=float); n=len(a); sd=float(a.std(ddof=1)) if n>1 else 0.; se=sd/(n**.5) if n else 0.
+    return {'mean':float(a.mean()) if n else 0.,'sd':sd,'se':se,'ci95':[float(a.mean()-1.96*se) if n else 0.,float(a.mean()+1.96*se) if n else 0.],'n':n}
+def boot(xs):
+    a=np.array(xs,dtype=float); rng=np.random.default_rng(0); means=[a[rng.integers(0,len(a),len(a))].mean() for _ in range(2000)]
+    return [float(np.quantile(means,.025)),float(np.quantile(means,.975))]
+def main():
+    with sqlite3.connect(DB_PATH) as conn: rows=conn.execute("SELECT strategy,params_json,metrics_json FROM experiment_runs WHERE experiment_id='final'").fetchall()
+    grouped=defaultdict(dict)
+    for strategy,p,m in rows:
+        p=json.loads(p); grouped[(p['scenario']['customers'],p['scenario']['dynamism'],p['seed'])][strategy]=json.loads(m)
+    complete={k:v for k,v in grouped.items() if set(v)==set(STRATS)}; aggregates=[]; paired=[]
+    cells=defaultdict(list)
+    for (customers,dyn,seed),triple in complete.items(): cells[(customers,dyn)].append((seed,triple))
+    for (customers,dyn),triples in sorted(cells.items()):
+        for strategy in STRATS:
+            entry={'customers':customers,'dynamism':dyn,'strategy':strategy,'metrics':{metric:summary([t[strategy][metric] for _,t in triples]) for metric in METRICS}}
+            aggregates.append(entry)
+        distances=[[t[s]['total_distance'] for _,t in triples] for s in STRATS]
+        fstat,fp=friedmanchisquare(*distances)
+        comparisons=[]
+        for i,j in ((0,1),(0,2),(1,2)):
+            diff=np.array(distances[i])-np.array(distances[j]); stat,p=wilcoxon(diff,zero_method='pratt') if np.any(diff) else (0.,1.)
+            comparisons.append({'comparison':f'{STRATS[i]}-{STRATS[j]}','mean_difference':float(diff.mean()),'bootstrap_ci95':boot(diff),'effect_size':float(diff.mean()/diff.std(ddof=1)) if len(diff)>1 and diff.std(ddof=1)>0 else 0.,'wilcoxon_statistic':float(stat),'wilcoxon_p':float(p)})
+        ordered=sorted(comparisons,key=lambda x:x['wilcoxon_p']); m=len(ordered)
+        for rank,item in enumerate(ordered): item['holm_p']=min(1.,item['wilcoxon_p']*(m-rank)); item['holm_reject']=item['holm_p']<.05
+        paired.append({'customers':customers,'dynamism':dyn,'n':len(triples),'friedman':{'statistic':float(fstat),'p_value':float(fp)},'comparisons':comparisons})
+    demos=[]
+    for dyn in (.1,.4,.8):
+        spec={'customers':50,'dynamism':dyn,'vehicles':5,'capacity':100,'map_size':100.,'horizon':480.}; scenario=generate_scenario({'scenario':spec},1)
+        traces={}
+        for s in STRATS:
+            sim=Simulator(EngineState(scenario),strategy_factory(s,{'max_evaluations':500})); sim.run(); traces[s]=sim.trace
+        demos.append({'scenario':{'customers':scenario.customer_locations,'release_times':scenario.release_times,'dynamism':dyn},'traces':traces})
+    OUT.mkdir(parents=True,exist_ok=True); data={'generated_at':datetime.now(timezone.utc).isoformat(),'source_experiment':'final','note':'Small n: treat as descriptive if n < 10.','config':{'customers':[50],'dynamism':[.1,.2,.4,.6,.8],'strategies':STRATS,'seeds':[1,2,3,4,5]},'aggregated':aggregates,'paired_comparisons':paired,'demo_scenarios':demos}
+    (OUT/'results.json').write_text(json.dumps(data,indent=2),encoding='utf8')
+    with (OUT/'aggregated.csv').open('w',newline='',encoding='utf8') as f:
+        writer=csv.writer(f); writer.writerow(['customers','dynamism','strategy','metric','mean','sd','se','ci95_low','ci95_high','n'])
+        for a in aggregates:
+            for metric,v in a['metrics'].items(): writer.writerow([a['customers'],a['dynamism'],a['strategy'],metric,v['mean'],v['sd'],v['se'],*v['ci95'],v['n']])
+    print(f'exported complete_triples={len(complete)} aggregate_cells={len(aggregates)}')
+if __name__=='__main__': main()
