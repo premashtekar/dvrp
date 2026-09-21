@@ -1,0 +1,12 @@
+progress 25/75
+progress 50/75
+progress 75/75
+final greedy_insertion: mean total_distance=1198.267752, mean evaluations=667.240000, mean compute_time_s=0.051803
+final insertion_2opt_star: mean total_distance=1009.931386, mean evaluations=12797.640000, mean compute_time_s=0.211224
+final tabu_search: mean total_distance=375.391002, mean evaluations=500.000000, mean compute_time_s=0.057462
+progress 25/75
+progress 50/75
+progress 75/75
+tuning greedy_insertion: mean total_distance=1219.324115, mean evaluations=688.360000, mean compute_time_s=0.049101
+tuning insertion_2opt_star: mean total_distance=1036.234411, mean evaluations=12105.680000, mean compute_time_s=0.190263
+tuning tabu_search: mean total_distance=358.644126, mean evaluations=500.000000, mean compute_time_s=0.053698
