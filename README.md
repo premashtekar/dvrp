@@ -5,7 +5,7 @@ A prototype evaluation of DVRP strategies: Greedy Insertion, Greedy + 2-Opt* Rep
 ## Setup & Run
 1. Install Python dependencies: `pip install -r requirements.txt`
 2. Install frontend dependencies: `cd web && npm ci`
-3. Generate data: `python run_experiment.py` (or `python run_sync.py`)
+3. Generate data: `python -m scripts.run_experiment`
 4. Build frontend: `npm run build`
 
 ## Pilot Coverage & Limitations
